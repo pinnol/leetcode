@@ -15,3 +15,43 @@ class Solution {
 [error reason]
 It is possible that the last elements are equal to val. 
 */
+
+/*----------------------------------------------------------*/
+class Solution {
+    public int removeElement(int[] nums, int val) {
+        Arrays.sort(nums);
+        int j = nums.length - 1;
+        for (int i = 0; i < nums.length && i<= j; i++){
+            if (nums[i] == val && nums[j] != val){
+                nums[i] = nums[j--];   
+            } else if(nums[i] == val && nums[j] == val) {
+                return i;
+            }
+        }
+        return j + 1;
+    }
+}
+
+// Accepted
+// The condition 'i < nums.length' is not necessary cause j <= (nums.length - 1)
+
+/*----------------------standard solution-------------------------*/
+
+public int removeElement(int[] nums, int val) {
+    int i = 0;
+    int n = nums.length;
+    while (i < n) {
+        if (nums[i] == val) {
+            nums[i] = nums[n - 1];
+            // reduce array size by one
+            n--;
+        } else {
+            i++;
+        }
+    }
+    return n;
+}
+
+// It is important to remember that when we need to remove some elements in a array,
+// we can copy latter one to previous one without losing elements cause we have copied 
+// different elements to previous positions.
