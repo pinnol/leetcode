@@ -1,0 +1,54 @@
+class Solution {
+    public int[] plusOne(int[] digits) {
+        int bit = digits.length - 1;
+        int numlength = digits.length;
+        int flag = 1; // Flag should be 'boolean' type.
+        while(bit >= 0){
+            if (flag == 1) {
+                if(digits[bit] == 9){
+                    if (digits[bit] == 9 && bit == 0){
+                        digits[bit] = 0;
+                        int[] result = new int[numlength+1];
+                        result[0] = 1;
+                        // Actually, the instruction below is unnecessary, cause the digits has been all zero.
+                        System.arraycopy(digits, 0, result, 1, numlength); 
+                        return result;
+                    }
+                    digits[bit] = 0;
+                } else {
+                    flag = 0;
+                    digits[bit] += 1;
+                }
+            } 
+            bit--;
+        }
+        return digits;
+    }
+}
+
+// Once a digit is not 9, we do not need to care about
+// the more siginificant digits cause they will stay the same. And 
+// the while loop can be written as for loop. In addition, the varaible 'flag' can be avoided.
+// It is better to use less varaibles by understanding the feature of object.
+
+
+
+
+
+public int[] plusOne(int[] digits) {
+        
+    int n = digits.length;
+    for(int i=n-1; i>=0; i--) {
+        if(digits[i] < 9) {
+            digits[i]++;
+            return digits;
+        }
+        
+        digits[i] = 0;
+    }
+    
+    int[] newNumber = new int [n+1];
+    newNumber[0] = 1;
+    
+    return newNumber;
+}
