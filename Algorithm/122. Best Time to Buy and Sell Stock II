@@ -1,0 +1,32 @@
+class Solution {
+    public int maxProfit(int[] prices) {
+        int numday = prices.length;
+        int templowest = Integer.MAX_VALUE;
+        int tempprofit = 0;
+        int profit = 0;
+        for(int i = 0; i< numday; i++){
+            if (prices[i] - templowest < tempprofit){
+                profit += tempprofit;
+                tempprofit = 0;
+                templowest = prices[i];
+            } else {
+                tempprofit = prices[i] - templowest;
+                if (i == numday - 1){
+                    profit += tempprofit;
+                }
+            }
+        }
+        return profit;
+    }
+}
+//-------------------------------------------------------------------------
+class Solution {
+    public int maxProfit(int[] prices) {
+        
+        int max_profit = 0;
+        for(int i=0; i<prices.length-1; i++) {
+            if(prices[i] < prices[i+1]) max_profit += prices[i+1] - prices[i];
+        }
+        return max_profit;
+    }
+}
