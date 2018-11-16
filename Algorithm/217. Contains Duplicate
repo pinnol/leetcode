@@ -1,0 +1,17 @@
+class Solution {
+    public boolean containsDuplicate(int[] nums) {
+        Map<Integer, Integer> arr = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            if(arr.containsKey(nums[i])){
+                return true;
+            } else {
+                arr.put(nums[i], i);
+            }
+        }
+        return false;
+    }
+}
+
+//--------------------------------------------------------
+
+Sort and then compare the adjacent pair integer.
