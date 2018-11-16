@@ -1,0 +1,28 @@
+class Solution {
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, Integer> arr = new HashMap<>();
+        for (int i = 0; i < nums.length; i++){
+            if(arr.containsKey(nums[i]) && Math.abs(arr.get(nums[i]) - i) <= k){
+                return true;
+            } else {
+                arr.put(nums[i], i);
+            }
+        }
+        return false;
+    }
+}
+//----------------------------------------------------------------
+class Solution {
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        if(nums == null || nums.length == 0)
+            return false;
+        Set<Integer> set = new HashSet<>();
+        for(int i=0; i<nums.length; ++i) {
+            if(i > k)
+                set.remove(nums[i-k-1]);
+            if(!set.add(nums[i]))
+                return true;
+        }
+        return false;
+    }
+}
