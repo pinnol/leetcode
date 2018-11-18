@@ -1,0 +1,36 @@
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int nonzeropos = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] != 0){
+                nums[nonzeropos] = nums[i];
+                nonzeropos++;
+            }
+        }
+        while(nonzeropos < nums.length){
+            nums[nonzeropos] = 0;
+            nonzeropos++;
+        }
+        
+    }
+}
+
+//---------------------------------------------------------------------------
+// C++ optimal
+void moveZeroes(vector<int>& nums) {
+    for (int lastNonZeroFoundAt = 0, cur = 0; cur < nums.size(); cur++) {
+        if (nums[cur] != 0) {
+            swap(nums[lastNonZeroFoundAt++], nums[cur]);
+        }
+    }
+}
+//java implement swap
+class TestEV{
+  public static void main(String[]args){
+    int x = 5,y = 10;  
+    x = x^y;
+    y = x^y;  //y=(x^y)^y
+    x = x^y;  //x=(x^y)^x
+    System.out.println("x="+x+"y="+y);
+    }
+}                   
