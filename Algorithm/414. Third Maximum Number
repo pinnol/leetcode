@@ -1,0 +1,66 @@
+
+//----------------------------------------------------------------
+public int thirdMax(int[] nums) {
+        Integer max1 = null;
+        Integer max2 = null;
+        Integer max3 = null;
+        for (Integer n : nums) {
+            if (n.equals(max1) || n.equals(max2) || n.equals(max3)) continue;
+            if (max1 == null || n > max1) {
+                max3 = max2;
+                max2 = max1;
+                max1 = n;
+            } else if (max2 == null || n > max2) {
+                max3 = max2;
+                max2 = n;
+            } else if (max3 == null || n > max3) {
+                max3 = n;
+            }
+        }
+        return max3 == null ? max1 : max3;
+    }
+// or use long type
+    long firstMax = Long.MIN_VALUE,secondMax = Long.MIN_VALUE,thirdMax = Long.MIN_VALUE;
+    for (int i = 0; i < nums.length; i++) {
+        if(nums[i]> firstMax)
+        {
+            thirdMax = secondMax;
+            secondMax = firstMax;
+            firstMax = nums[i];
+        }else if(nums[i]> secondMax && nums[i] < firstMax)
+        {
+            thirdMax = secondMax;
+            secondMax = nums[i];
+        }else if( nums[i] > thirdMax && nums[i] < secondMax)
+        {
+            thirdMax = nums[i];
+        }
+    }
+    return (int)(thirdMax == Long.MIN_VALUE ? firstMax: thirdMax);
+}
+
+//----------------------------------------------------------------
+public class Solution {
+    public int thirdMax(int[] nums) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Set<Integer> set = new HashSet<>();
+        for (int i : nums) {
+            if (!set.contains(i)) {
+                pq.offer(i);
+                set.add(i);
+                if (pq.size() > 3) {
+                    set.remove(pq.poll());
+                }
+            }
+        }
+        if (pq.size() < 3) {
+            while (pq.size() > 1) {
+                pq.poll();
+            }
+        }
+        return pq.peek();
+    }
+}
+
+/*A priority queue is basically a binary heap in Java. so each operation of inserting or deleting of this
+queue takes O(lgK) where k is the size of the queue in this case O(lg3) which is constant. so total is O(Nlg3) ~ O(n).*/
