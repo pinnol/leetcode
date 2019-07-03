@@ -1,0 +1,93 @@
+public class Solution {
+    /**
+     * @param a: The A array
+     * @param b: The B array
+     * @param s: The S string
+     * @return: The answer
+     */
+    public String stringReplace(String[] a, String[] b, String s) {
+        // Write your code here
+        StringBuilder sb = new StringBuilder(s);
+        int mxLen = 0;
+        int mod = 1000000007;
+        int base = 31;
+        List<Integer> aHash = new ArrayList<>();
+        List<Integer> sHash = new ArrayList<>();
+        List<Integer> Base = new ArrayList<>();
+
+
+        for (int i = 0; i < a.length; i++){
+            int len = a[i].length();
+            int ahash = 0;
+            if(len > mxLen) {
+                mxLen = len;
+            }
+
+            for(int j = 0; j < len; j++){
+                ahash = (int)(((long)ahash * (long)base + (long)a[i].charAt(j) - (long)'a') % (long)mod);
+            }
+            aHash.add(ahash);
+        }
+
+        if(s.length() > mxLen) {
+            mxLen = s.length();
+        }
+
+        int shash = 0;
+        sHash.add(shash);
+        for (int i = 0; i < s.length(); i++){
+            shash = (int)(((long)shash * (long)base + (long)s.charAt(i) - (long)'a') % (long)mod);
+            sHash.add(shash);
+        }
+
+        int base_i = 1;
+        Base.add(base_i);
+        for (int i = 1; i < mxLen; i++){
+            base_i = (int)((long)base_i * (long)base % (long)mod);
+            Base.add(base_i);
+        }
+
+        for (int i = 0; i < s.length(); i++){
+            int index = -1;
+            int maxLen = -1;
+            for(int j = 0; j < a.length; j++){
+                int len = a[j].length();
+                int l = i + 1;
+                int r = i + len;
+                if(r > s.length()) {
+                    continue;
+                }
+                int sHashValue = (int) (((long)sHash.get(r) - (long)sHash.get(l-1) * (long)Base.get(r - l +1) % (long)mod + (long)mod) %(long)mod);
+                int aHashValue = aHash.get(j);
+                // if(sHashValue == aHashValue){
+                //     int i2 = i;
+                //     int i3= 0;
+                //     while(s.charAt(i2) == a[j].charAt(i3)) {
+                //         i2++;
+                //         i3++;
+                //         if(i3 >= len){
+                //             break;
+                //         }
+                //     }
+                //     if(i3 < len) {
+                //         continue;
+                //     } else {
+                //         if(len > maxLen){
+                //             index = j;
+                //             maxLen = len;
+                //         }
+                //     }
+                // }
+                if(sHashValue == aHashValue && len > maxLen) {
+                   maxLen = len;
+                   index = j;
+                }
+            }
+            if(index != -1){
+                sb.replace(i, i + maxLen, b[index]);
+                i += maxLen - 1; //因为还有i++, 所以要减一
+            }
+        }
+        return sb.toString();
+    }
+}
