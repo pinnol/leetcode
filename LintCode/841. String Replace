@@ -29,10 +29,6 @@ public class Solution {
             aHash.add(ahash);
         }
 
-        if(s.length() > mxLen) {
-            mxLen = s.length();
-        }
-
         int shash = 0;
         sHash.add(shash);
         for (int i = 0; i < s.length(); i++){
@@ -42,7 +38,7 @@ public class Solution {
 
         int base_i = 1;
         Base.add(base_i);
-        for (int i = 1; i < mxLen; i++){
+        for (int i = 1; i <= mxLen; i++){ //要计算到mxLen，因为计算source时要左移len（len的取值范围是mxLen）长度的位置。
             base_i = (int)((long)base_i * (long)base % (long)mod);
             Base.add(base_i);
         }
