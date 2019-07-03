@@ -1,0 +1,54 @@
+public class Solution {
+    /*
+     * @param source: A source string
+     * @param target: A target string
+     * @return: An integer as index
+     */
+    public int strStr2(String source, String target) {
+        // write your code here
+        if(target != null && target.equals("")){
+            return 0;
+        }
+        
+        if(source == null || source.equals("") || target == null || target.equals("")) {
+            return -1;
+        }
+        
+        int tHashValue = 0;
+        List<Integer> sHashList = new ArrayList<>();
+        int base = 31;
+        int mod = 10000007;
+        int len = target.length();
+        
+        
+        for (int i = 0; i < target.length(); i++){
+            tHashValue = (int)(((long)tHashValue * (long)base + (long)target.charAt(i)) % (long)mod);
+        }
+        
+        int sHash = 0;
+        sHashList.add(sHash);
+        for (int i = 0; i < source.length(); i++){
+            sHash = (int)(((long)sHash * (long)base + (long)source.charAt(i))% (long)mod);
+            sHashList.add(sHash);
+        }
+        
+        int i_base = 1;
+        for (int i = 1; i <= len; i++) { //i要循环到len，因为计算s的HashValue时需要将最高位左移len个位置，即乘base^len。
+            i_base = (int)(((long)i_base * (long)base) % (long)mod);
+        }
+        
+        for (int i = 0; i < source.length(); i++) {
+            if(i + len > source.length()){
+                break;
+            }
+            int sHashValue = (int)(((long)sHashList.get(i + len) - ((long)sHashList.get(i) * (long)i_base % (long)mod) + (long)mod) % (long)mod);
+            if (sHashValue == tHashValue && target.equals(source.substring(i, i+len))){
+                return i;
+            } else {
+                continue;
+            }
+        }
+        
+        return -1;
+    }
+}
