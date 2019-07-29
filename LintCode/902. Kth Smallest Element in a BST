@@ -1,0 +1,35 @@
+public class Solution {
+    /**
+     * @param root: the given BST
+     * @param k: the given k
+     * @return: the kth smallest element in BST
+     */
+    public int kthSmallest(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        // 先找出树中最小的点，压到栈中
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+        // 每次循环pop出树中最小的点
+        for (int i = 0; i < k - 1; i++) {
+            TreeNode node = stack.peek();
+            // pop出最小的点后，为了保证下一次pop出的点是当时树中最小的，需要把当前的节点的右子树压入栈中，
+            // 因为当前节点没有左子树，根据BST中序遍历升序的特点，根节点的右子树会比根节点的父节点小，但是比根节点大，因而我们可以找到第二小的点。
+            if (node.right == null) {
+                node = stack.pop();
+                while (!stack.isEmpty() && stack.peek().right == node) {
+                    node = stack.pop();
+                }
+            } else {
+                node = node.right;
+                while (node != null) {
+                    stack.push(node);
+                    node = node.left;
+                }
+            }
+        }
+        
+        return stack.peek().val;
+    }
+}
