@@ -18,7 +18,10 @@ public boolean isValidBST(TreeNode root) {
             // move to next
             if (node.right == null) {
                 node = stack.pop();
-                // 如果该点的前一个点的右节点是该点，则说明前一个点已经被比较过了，所以要pop出去。
+                // 如果该点的前一个点的右节点是该点，则说明前一个点已经被比较过了，所以要pop出去。这种情况
+                // 只会发生在每次循环时没有pop出栈顶的情况下，就比如这题中循环的开始我们只是使用了TreeNode node = stack.peek();
+                // 然后在这里分情况讨论node.right是否为空，当它不为空的时候，我们并没有pop出node节点，而是直接push了它的right node。
+                // 所以我们才在right为空时写了以下循环。其实可以写的更简洁。
                 while (!stack.isEmpty() && stack.peek().right == node) {
                     node = stack.pop();
                 }
@@ -33,3 +36,41 @@ public boolean isValidBST(TreeNode root) {
         
         return true;
     }
+    
+    // 更简洁的版本
+    
+    public boolean isValidBST(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<>();
+        
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+        
+        TreeNode lastNode = null;
+        while (!stack.isEmpty()) {
+            // compare to last node
+            // 这里使用了pop
+            TreeNode node = stack.pop();
+            if (lastNode != null && lastNode.val >= node.val) {
+                return false;
+            }
+            lastNode = node;
+            
+            // move to next
+            if (node.right != null) {
+            node = node.right;
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+            }
+        }
+        
+        return true;
+    }
+    
+    // 通过这个简洁的版本，我们知道了是否需要判断 当前节点的前一个节点是否已经被判断过因而不需要再次判断，所以需要被pop出去 这种情况取决于我们
+    // 如何构造stack，即每次循环是否一定会pop出当前节点。需要注意的是，有时候并不能pop当前节点，
+    // 构造出简洁的stack。详见901. Closest Binary Search Tree Value II
+
