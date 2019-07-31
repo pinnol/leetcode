@@ -1,0 +1,114 @@
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: the given BST
+     * @param target: the given target
+     * @param k: the given k
+     * @return: k values in the BST that are closest to the target
+     */
+    public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        // write your code here
+
+        List<Integer> result = new ArrayList<>();
+        if (root == null || k == 0) {
+            return result;
+        }
+        Stack<TreeNode> lowerStack = getStack(root, target);
+        
+        Stack<TreeNode> upperStack = new Stack<>();
+        upperStack.addAll(lowerStack);
+        if (lowerStack.peek().val > target) {
+            moveLower(lowerStack);
+        } else {
+            moveUpper(upperStack);
+        }
+        
+        for (int i = 0; i < k; i++) {
+            if (lowerStack.isEmpty() || !upperStack.isEmpty() && target - lowerStack.peek().val > upperStack.peek().val - target) {
+                result.add(upperStack.peek().val);
+                moveUpper(upperStack);
+            } else {
+                result.add(lowerStack.peek().val);
+                moveLower(lowerStack);
+            }
+        }
+        
+        return result;
+    }
+    
+    
+    private Stack<TreeNode> getStack(TreeNode root, double target) {
+        Stack<TreeNode> stack = new Stack<>();
+        if (root == null) {
+            return stack;
+        }
+        
+        while (root != null) {
+            stack.push(root);
+            if (root.val > target) {
+                root = root.left;
+            // 注意这里不能在找到target的时候就返回stack，一定要等到将比较进行到底，这样才能求出最小上限和最大下限。比如当target点
+            // 还有右子树的时候，提前停止，就有可能无法求出最小上限，
+            } else{
+                root = root.right;
+            }
+        }
+        return stack;
+    }
+    
+    private void moveUpper(Stack<TreeNode> stack) {
+        TreeNode node = stack.peek();
+        if (node.right == null) {
+            node = stack.pop();
+            while (!stack.isEmpty() && stack.peek().right == node) {
+                node = stack.pop();
+            }  
+            return;
+        }
+        
+        node = node.right;
+        while (node != null) {
+            stack.push(node);
+            node = node.left;
+        }
+        return;
+    }
+    
+    private void moveLower(Stack<TreeNode> stack) {
+        // 这里不能直接使用pop，因为我们构造stack的时候并不是使用最简洁的方法，即从root就开始使用pop方法构造stack，将所有比较过的node除去。
+        // 这里实际上还有没被pop出的已被比较过的点，构造stack的逻辑实际上跟这里的代码一致。如果我们改用pop，像
+        //            41
+        //       37       44
+        //   1       
+        //0
+        // 这种树并且target为3.2的时候，构造出来的stack将是{41,37,1}，我们把1pop出去后，添加0，下一次调用函数将 0 pop，
+        // 此时本应该pop出37 41使stack为空，但因为此时1已经被pop了，37的左节点不是0，所以37不会被pop，致使stack不为空，
+        // 最小值变为了37，程序就会出错。
+        TreeNode node = stack.peek();
+        if (node.left == null) {
+            node = stack.pop();
+            while (!stack.isEmpty() && stack.peek().left == node) {
+                node = stack.pop();
+            }  
+            return;
+        }
+        
+        node = node.left;
+        while (node != null) {
+            stack.push(node);
+            node = node.right;
+        }
+        return;
+    }
+}
