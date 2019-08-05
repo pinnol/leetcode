@@ -1,0 +1,16 @@
+    public ListNode middleNode(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode slow = head;
+        // 注意fast指针的初始值是head.next
+        ListNode fast = head.next;
+        // 当fast == null的时候，middle是中间值（因为上一次循环的fast.next不为空，fast.next.next为空，只走了一次）
+        // 当fast.next == null时(说明上一次循环正好走了两次)，middle是中间偏左值。
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
