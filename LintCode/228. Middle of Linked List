@@ -14,3 +14,23 @@
         
         return slow;
     }
+    
+    
+    public ListNode middleNode(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode slow = head;
+        // 如果fast初始化为head
+        ListNode fast = head;
+        // 此时判断next以及next.next
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
+    
+    // 寻找两种初始化的共性，发现我们不需要去管fast的位置，而是要判断快指针是否能走两次。只有在快指针能成功走两次的情况下，慢指针才移动一次
+    // 否则直接返回慢指针
