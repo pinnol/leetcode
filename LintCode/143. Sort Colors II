@@ -1,0 +1,45 @@
+public class Solution {
+    /**
+     * @param colors: A list of integer
+     * @param k: An integer
+     * @return: nothing
+     */
+    public void sortColors2(int[] colors, int k) {
+        // write your code here
+        quickSort(colors, 0, colors.length-1, 1, k);
+    }
+    
+    private void quickSort(int[] colors, int start, int end, int colorFrom, int colorTo) {
+        if (colorFrom == colorTo){
+            return;
+        } 
+        
+        if (start >= end) {
+            return;
+        }
+        int left = start;
+        int right = end;
+        int pivot = (colorFrom + colorTo) / 2;
+        while(left<= right) {
+            // 注意这里有等号，会把等于pivot的值都放到一边。因此当colorFrom == colorTo的时候可以不用再分。
+            while (left<=right && colors[left] <= pivot) {
+                left++;
+            }
+            
+            while (left <= right && colors[right] > pivot) {
+                right--;
+            }
+            
+            if (left <= right) {
+                int temp = colors[left];
+                colors[left] = colors[right];
+                colors[right] = temp;
+                left++;
+                right--;
+            }
+            
+            quickSort(colors, start, right, colorFrom, pivot);
+            quickSort(colors, left, end, pivot + 1, colorTo);
+        }
+    }
+}
