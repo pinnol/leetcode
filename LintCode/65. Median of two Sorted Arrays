@@ -1,0 +1,52 @@
+// O(log(k))
+// 整体思路是每次递归消除一半的k，每次消除的数只属于一个数组，尽管有可能另一个数组中剩下的数比被消除的数还要小，
+// 但是在下一次迭代中或者最终的迭代中，这个被剩下的数仍然会被消去。我们只要保证每次被消去的数中不包含我们要找的数就可以。
+public class Solution {
+    /*
+     * @param A: An integer array
+     * @param B: An integer array
+     * @return: a double whose format is *.5 or *.0
+     */
+    public double findMedianSortedArrays(int[] A, int[] B) {
+        int n = A.length + B.length;
+        if (n % 2 == 0) {
+            return (findkthNum(A, 0, B, 0, n / 2) +
+            findkthNum(A, 0, B, 0, n / 2 + 1)) / 2.0;
+        }
+        
+        return findkthNum(A, 0, B, 0, n / 2 + 1);
+    }
+    
+    // 这里k的定义是在剩下的数中，我们要寻找第几小的数，以1为基
+    private double findkthNum(int[] A, int startOfA, int[] B, int startOfB, int k) {
+        // 如果有一个数组被完全去除了，就去剩下的数组中找。
+        // 之所以出现这种情况，是因为我们每次只保证要被去除的数的数量不超过数组的大小，但不保证还有下一个数。
+        // 可以在下面的程序中观察得出。
+        if (startOfA >= A.length) {
+            return B[startOfB + k - 1];
+        }
+        
+        if (startOfB >= B.length) {
+            return A[startOfA + k - 1];
+        }
+        
+        if (k == 1) {
+            return Math.min(A[startOfA], B[startOfB]);
+        }
+        
+        
+        // 找到每个数组的第k/2小的数，相互比较，找出第k/2小的数比较小的那个数组，这样我们能保证每次取出的数肯定不包含第k小的数
+        // 当超过范围的时候，这个数组的数就不被消除，等到下次迭代，或者最终比较(k=1)的时候再处理
+        int halfkthOfA = startOfA + k/2 - 1 < A.length? A[startOfA + k/2 - 1] : Integer.MAX_VALUE;
+        int halfkthOfB = startOfB + k/2 - 1 < B.length? B[startOfB + k/2 - 1] : Integer.MAX_VALUE;
+        
+        if (halfkthOfA < halfkthOfB) {
+            // k - k/2是下次要找的数，因为k/2不一定为整数，所以不能直接用k/2
+            // startOfA + k / 2是下次的起始位置
+            return findkthNum(A, startOfA + k / 2, B, startOfB, k - k/2);
+        } else {
+            return findkthNum(A, startOfA, B, startOfB + k / 2, k - k/2);
+        }
+        
+    }
+}
