@@ -32,7 +32,7 @@ public class Solution {
             if (!dict.contains(word)) {
                 continue;
             }
-            
+            // 注意这里substring只能到length - 1，所以我们不能让i=length，所以要在循环外特殊判断
             List<String> segments = wordBreakHelper(s.substring(i), dict, memo);
             for (String segment : segments) {
                 results.add(word + " " + segment);
