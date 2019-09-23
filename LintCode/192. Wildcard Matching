@@ -1,0 +1,64 @@
+public class Solution {
+    /**
+     * @param s: A string 
+     * @param p: A string includes "?" and "*"
+     * @return: is Match?
+     */
+    public boolean isMatch(String s, String p) {
+        if (s == null && p == null) {
+            return false;
+        }
+        
+        int slength = s.length();
+        int plength = p.length();
+        boolean[][] memo = new boolean[slength][plength];
+        boolean[][] visited = new boolean[slength][plength];
+        return isMatchHelper(s, 0, p, 0, memo, visited);
+    }
+    
+    private boolean isMatchHelper(String s, int sIndex, String p, int pIndex, boolean[][] memo, boolean[][] visited) {
+        if (p.length() == pIndex) {
+            return sIndex == s.length();
+        }
+        
+        if (sIndex == s.length()) {
+            return allStar(p, pIndex);
+        }
+        
+        // 注意这里的重复计算可以在连续的*中找到，如**
+        if (visited[sIndex][pIndex] == true) {
+            return memo[sIndex][pIndex];
+        }
+        
+        boolean match = false;
+        if (p.charAt(pIndex) == '*') {
+            match = isMatchHelper(s, sIndex, p, pIndex + 1, memo, visited) || 
+                    isMatchHelper(s, sIndex + 1, p, pIndex, memo, visited);
+        } else {
+            match = charMatch(s, sIndex, p, pIndex) && isMatchHelper(s, sIndex + 1, p, pIndex + 1, memo, visited);
+        }
+        
+        visited[sIndex][pIndex] = true;
+        memo[sIndex][pIndex] = match;
+        return match;
+    }
+    
+    private boolean charMatch(String s, int sIndex, String p, int pIndex) {
+        if (s.charAt(sIndex) == p.charAt(pIndex) || p.charAt(pIndex) == '?') {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean allStar(String p, int pIndex) {
+        for (int i = pIndex; i < p.length(); i++) {
+            char ch = p.charAt(i);
+            if (ch != '*') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
