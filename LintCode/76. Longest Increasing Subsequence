@@ -1,0 +1,53 @@
+// O(nlogn) Binary Search
+// 思路：使用一个辅助空间minLast数组。
+// minLast[i]存储多个长度为i的子序列的结尾值中最小的一个的数值。（长度为i的子序列有多个，对应的结尾位置有多个，
+// 以这些位置为结尾的LIS长度都为i， 则这些结尾数字中最小的一个存在minLast[i]中）
+// minLast数组严格递增。且下标表示LIS长度，也是严格递增。
+
+// 对于每个位置的nums[i]，我们要找前一个位置，使其满足对应的数小于nums[i], 且序列长度最大（找到比当前数小的最长序列的位置）。
+// 然后我们就可以将minLast中找到的位置的后一个位置替换为当前nums[i]，最终我们要遍历minLast，找到最后一个有效值，也就是最长子序列
+// 这个操作在minLast数组中二分查找。
+
+public class Solution {
+    /**
+     * @param nums: The integer array
+     * @return: The length of LIS (longest increasing subsequence)
+     */
+    public int longestIncreasingSubsequence(int[] nums) {
+        int[] minLast = new int[nums.length + 1];
+        minLast[0] = Integer.MIN_VALUE;
+        for (int i = 1; i <= nums.length; i++) {
+            minLast[i] = Integer.MAX_VALUE;
+        }
+        
+        for (int i = 0; i < nums.length; i++) {
+            // find the first number in minLast >= nums[i]
+            int index = binarySearch(minLast, nums[i]);
+            // replace the first larger number
+            minLast[index] = nums[i];
+        }
+        
+        for (int i = nums.length; i >= 1; i--) {
+            if (minLast[i] != Integer.MAX_VALUE) {
+                return i;
+            }
+        }
+        
+        return 0;
+    }
+    
+    // find the first position whose number > num, then we replace it
+    private int binarySearch(int[] minLast, int num) {
+        int start = 0, end = minLast.length - 1;
+        while (start + 1 < end) {
+            int mid = (end - start) / 2 + start;
+            if (minLast[mid] < num) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        
+        return end;
+    }
+}
