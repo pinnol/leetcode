@@ -1,5 +1,7 @@
 // 思路与76 差不多，都是用辅助数组存储结尾最小值，然后不断累计子序列长度。
 // 需要注意的是len，这里binarySearch的结尾位置是不断变化的，所以我们可以把当前数添加到合适的位置。
+// 之所以把envelo[1]按倒序排列，是因为他们的width相同，这时即便height大，也不能装下height小的，所以用倒序覆盖掉之前的值，
+// 等到下一个width的height又升高了才能增加长度。 当envelop[1]相等时，不能让len增加，避免了height相同还装doll的情况。
 
 public class Solution {
     /*
