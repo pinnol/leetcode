@@ -1,0 +1,66 @@
+// 用拓扑排序，每一个seq当做一种子母间的顺序约束，当构造出来的sequence满足所有约束的时候，他的子集一定是各个seq
+public class Solution {
+    /**
+     * @param org: a permutation of the integers from 1 to n
+     * @param seqs: a list of sequences
+     * @return: true if it can be reconstructed only one or false
+     */
+    public boolean sequenceReconstruction(int[] org, int[][] seqs) {
+        // write your code here
+        int n = org.length;
+        List<Integer>[] edges = new ArrayList[n+1];
+        int[] degree = new int[n+1];
+        
+        for (int i = 0; i <= org.length; i++) {
+            edges[i] = new ArrayList<Integer>();
+        }
+        
+        int count = 0;
+        for (int[] seq : seqs) {
+            int length = seq.length;
+            count += length;
+            // length >= 1是为了后面的判断，防止seq长度为0
+            if (length >= 1 && (seq[0] < 1 || seq[0] > n)) {
+                return false;
+            }
+            for (int i = 1; i < length; i++) {
+                if (seq[i] < 1 || seq[i] > n) {
+                    return false;
+                }
+                if (!edges[seq[i-1]].contains(seq[i])) {
+                    edges[seq[i-1]].add(seq[i]);
+                    degree[seq[i]]++;
+                }
+            }
+        }
+        // 防止某个seq等于[]
+        if (count < n) {
+            return false;
+        }
+        
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 1; i < n+1; i++) {
+            if (degree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        
+        int cnt = 0;
+        // 如果有多余一个neighbor，说明可以不只构造一种sequence，因为neighbor的在queue中的顺序其实可以交换
+        while(queue.size() == 1) {
+            int curr = queue.poll();
+            if (org[cnt] != curr) {
+                return false;
+            }
+            for (int neighbour: edges[curr]) {
+                degree[neighbour]--;
+                if (degree[neighbour] == 0) {
+                    queue.offer(neighbour);
+                }
+            }
+            cnt++;
+        }
+        
+        return cnt == n;
+    }
+}
