@@ -1,0 +1,83 @@
+// 因为多个用户可能用同一个名字，但是其实是不同的用户，所以我们需要用id指代不同的用户。
+// 使用set去除重复email
+public class Solution {
+    /**
+     * @param accounts: List[List[str]]
+     * @return: return a List[List[str]]
+     */
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        if (accounts == null) {
+            List<List<String>> result = new ArrayList<>();
+            return result;
+        }
+        
+        Map<Integer, Integer> father = new HashMap<>();
+        for (int i = 0; i < accounts.size(); i++) {
+            father.put(i, i);
+        }
+        
+        Map<String, List<Integer>> emailToIds = getEmailToIds(accounts);
+        
+        for (String email : emailToIds.keySet()) {
+            List<Integer> Ids = emailToIds.get(email);
+            for (int i = 1; i < Ids.size(); i++) {
+                union(father, Ids.get(i), Ids.get(0));
+            }
+        }
+        
+        
+        Map<Integer, Set<String>> idToEmails = getIdToEmails(father, accounts);
+        List<List<String>> result = new ArrayList<>();
+        for (Integer id : idToEmails.keySet()) {
+            List<String> emailList = new ArrayList<>(idToEmails.get(id));
+            Collections.sort(emailList);
+            emailList.add(0, accounts.get(id).get(0));
+            result.add(emailList);
+        }
+        return result;
+    }
+    
+    
+    public Map<String, List<Integer>> getEmailToIds(List<List<String>> accounts) {
+        Map<String, List<Integer>> emailToIds = new HashMap<>();
+        for (int i = 0; i < accounts.size(); i++) {
+            List<String> account = accounts.get(i);
+            for (int j = 1; j < account.size(); j++) {
+                List<Integer> Ids = emailToIds.getOrDefault(account.get(j), new ArrayList<Integer>());
+                Ids.add(i);
+                emailToIds.put(account.get(j), Ids);
+            }
+        }
+        return emailToIds;
+    }
+    
+    public Map<Integer, Set<String>> getIdToEmails(Map<Integer, Integer> father, List<List<String>> accounts) {
+        Map<Integer, Set<String>> idToEmails = new HashMap<>();
+        for (int i = 0; i < accounts.size(); i++) {
+            int f = find(father, i);
+            List<String> emails = accounts.get(i);
+            Set<String> emailSet = idToEmails.getOrDefault(f, new HashSet<String>());
+            for (int j = 1; j < emails.size(); j++) {
+                emailSet.add(emails.get(j));
+            }
+            idToEmails.put(f, emailSet);
+        }
+        return idToEmails;
+    }
+    
+    public Integer find(Map<Integer, Integer> father, Integer i) {
+        int j = i;
+        while (j != father.get(j)) {
+            j = father.get(j);
+        }
+        return j;
+    }
+    
+    public void union(Map<Integer, Integer> father, Integer a, Integer b) {
+        int father1 = find(father, a);
+        int father2 = find(father, b);
+        if (father1 != father2) {
+            father.put(father1, father2);
+        }
+    }
+}
