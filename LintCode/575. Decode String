@@ -1,0 +1,51 @@
+public class Solution {
+    /**
+     * @param s: an expression includes numbers, letters and brackets
+     * @return: a string
+     */
+    // 注意这题之所以要用Object作为元素类型，是因为我们在pop stack元素的时候，需要使用instanceOf来判断元素是String还是Integer，
+    // 也就是说我们需要在stack中存入两种类型的元素。所以用object。
+    // 如果在其他题中可以使用Character.isDigit等类似的方法来判断是否为数字时，就可以不用object。
+    Stack<Object> stack = new Stack<>();
+    public String expressionExpand(String s) {
+        if (s == null) {
+            return null;
+        }
+        int len = s.length();
+        int number = 0;
+        for (char ch : s.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                number = number * 10 + ch - '0';
+            } else if (ch == '[') {
+                // 这里的Integer.valueOf(number)相当于创建了一个Integer对象，不能直接parseInt，因为那不是对象的子类，而是primitive类型
+                stack.push(Integer.valueOf(number));
+                number = 0;
+            } else if (ch == ']'){
+                String tempStr = popStack();
+                // 注意pop出元素之后要类型转换一下
+                Integer num = (Integer) stack.pop();
+                for (int i = 0; i < num; i++) {
+                    stack.push(tempStr);
+                }
+            } else {
+                // 与上面一样，这里创建了一个String对象，也可以写成"" + ch
+                stack.push(String.valueOf(ch));
+            }
+        }
+        String result = popStack();
+        return result;
+    }
+    
+    private String popStack() {
+        Stack<String> buffer = new Stack<>();
+        while (!stack.isEmpty() && stack.peek() instanceof String) {
+            buffer.push((String) stack.pop());
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        while (!buffer.isEmpty()) {
+            sb.append(buffer.pop());
+        }
+        return sb.toString();
+    }
+}
