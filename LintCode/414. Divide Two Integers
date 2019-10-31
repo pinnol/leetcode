@@ -1,0 +1,42 @@
+public class Solution {
+    /**
+     * @param dividend: the dividend
+     * @param divisor: the divisor
+     * @return: the result
+     */
+    public int divide(int dividend, int divisor) {
+    
+        if (divisor == 0 && dividend != 0) {
+            return dividend > 0? Integer.MAX_VALUE : -1;
+        }
+        
+        if (divisor == 0 && dividend == 0) {
+            return Integer.MAX_VALUE;
+        }
+        
+        if (dividend == 0) {
+            return 0;
+        }
+        // 因为复数最大值是-2147483648，正数最大值是2147483647，复数转化为正数的时候会有溢出。
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
+        
+        boolean isNagative = (dividend > 0 && divisor < 0) || (dividend < 0 && divisor > 0);
+        
+        int shift = 0;
+        //之所以要先转换为long在取绝对值，是因为-2147483648取正时会有溢出。
+        long a = Math.abs((long) dividend), b = Math.abs((long)divisor);
+        int res = 0;
+        while (a >= b) {
+            shift = 0;
+            while (a >= (b << shift)) {
+                shift++;
+            }
+            a -= b << (shift - 1);
+            res += 1 << (shift - 1);
+        }
+        return isNagative? -res : res;
+
+    }
+}
