@@ -1,0 +1,78 @@
+// 可以打印结果的方法
+public class Solution {
+    /**
+     * @param A: An integer array
+     * @param k: A positive integer (k <= length(A))
+     * @param target: An integer
+     * @return: An integer
+     */
+     
+    int[] res;
+    int tot;
+    int[] A;
+    int K;
+    int[][][] f;
+    
+    // 这里递归调用打印函数，每一次递归，寻招前i个数中，还需选择j个数相加得k时的最后一个数。
+    void printAnswer(int i, int j, int k) {
+        // 当所需数的个数等于0时，打印所有数
+        if (j == 0) {
+            for (int h = 0; h < K; ++h) {
+                System.out.print(res[h]);
+                if (h == K - 1) {
+                    System.out.println("=" + tot);
+                }
+                else {
+                    System.out.print("+");
+                }
+            }
+            
+            return;
+        }
+        // 打印不包括最后一个数时的所有结果
+        if (f[i - 1][j][k] > 0) {
+            printAnswer(i - 1, j, k);
+        }
+        // 只有可以走到j=1的时候，递归的终点才有可能到达，否则所有存储的结果就会被抛弃
+        if (j > 0 && k >= A[i - 1] && f[i - 1][j - 1][k - A[i - 1]] > 0) {
+            res[j - 1] = A[i - 1];
+            // 打印不包含当前数时（因为已经被存储），相加为k - 当前数值的结果。
+            printAnswer(i - 1, j - 1, k - A[i - 1]);
+        }
+    }
+    
+    public int kSum(int[] AA, int KK, int T) {
+        K = KK;
+        A = AA;
+        int n = A.length;
+        res = new int[K];
+        tot = T;
+        f = new int[n + 1][K + 1][T + 1];
+        int i, j, k;
+        for (j = 0; j <= K; ++j) {
+            for (k = 0; k <= T; ++k) {
+                f[0][j][k] = 0;
+            }
+        }
+        
+        // 注意dp数组是三维的，动态规划中，当我们需要用到某一个变量时，就可增加对应的一维。
+        f[0][0][0] = 1;
+        for (i = 1; i <= n; ++i) {
+            for (j = 0; j <= K; ++j) {
+                for (k = 0; k <= T; ++k) {
+                    // not using A[i - 1]
+                    f[i][j][k] = f[i - 1][j][k];
+                    
+                    // using A[i - 1]
+                    if (j > 0 && k >= A[i - 1]) {
+                        f[i][j][k] += f[i - 1][j - 1][k - A[i - 1]];
+                    }
+                }
+            }
+        }
+        
+        printAnswer(n, K, T);
+        
+        return f[n][K][T];
+    }
+}
