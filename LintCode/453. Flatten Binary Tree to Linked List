@@ -1,0 +1,110 @@
+public class Solution {
+    private TreeNode lastNode = null;
+    // 每次flatten会改变lastNode的左右节点，并flatten当前节点的左右节点
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+
+        if (lastNode != null) {
+            lastNode.left = null;
+            lastNode.right = root;
+        }
+
+        lastNode = root;
+        TreeNode right = root.right;
+        // flatten左节点时，会把lastNode设为左节点
+        flatten(root.left);
+        // flatten右节点时，会更改左节点的左右子节点，并flatten当前的右节点
+        flatten(right);
+    }
+}
+
+
+public class Solution {
+    /**
+     * @param root: a TreeNode, the root of the binary tree
+     * @return: nothing
+     */
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        TreeNode last = flattenTree(root.left);
+        flattenTree(root.right);
+        if (last != null) {
+            last.right = root.right;
+            root.right = root.left;
+            root.left = null;
+        }
+    }
+    
+    private TreeNode flattenTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        
+        if (root.left == null && root.right != null) {
+            return flattenTree(root.right);
+        }
+        
+        if (root.right == null && root.left != null) {
+            TreeNode last = flattenTree(root.left);
+            root.right = root.left;
+            root.left = null;
+            return last;
+        }
+        
+        if (root.left == null && root.right == null) {
+            return root;
+        }
+        
+        
+        TreeNode leftLast = flattenTree(root.left);
+        TreeNode last = flattenTree(root.right);
+        
+        leftLast.right = root.right;
+        root.right = root.left;
+        root.left = null;
+        
+        return last;
+    }
+}
+
+
+// non-recursion
+public class Solution {
+    /**
+     * @param root: a TreeNode, the root of the binary tree
+     * @return: nothing
+     */
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        
+        while (!stack.empty()) {
+            // node是当前父节点
+            TreeNode node = stack.pop();
+            // 先push right 再push left，这样pop的时候正好相反
+            if (node.right != null) {
+                stack.push(node.right);
+            }
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+            
+            // connect 
+            node.left = null;
+            if (!stack.empty()) {
+                node.right = stack.peek();
+            }
+        }
+    }
+}
+
+
+
