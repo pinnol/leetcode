@@ -1,0 +1,25 @@
+public class Solution {
+
+    // @param nestedList a list of NestedInteger
+    // @return a list of integer
+    public List<Integer> flatten(List<NestedInteger> nestedList) {
+        Iterator<NestedInteger> cur = nestedList.iterator();
+        Stack<Iterator<NestedInteger>> stack = new Stack<>();
+        List<Integer> res = new ArrayList<>();
+        while (!stack.isEmpty() || cur.hasNext()) {
+            if (cur.hasNext()) {
+                NestedInteger n = cur.next();
+                if (n.isInteger()) {
+                    res.add(n.getInteger());
+                } else {
+                    List<NestedInteger> list = n.getList();
+                    stack.push(cur);
+                    cur = list.iterator();
+                }
+            } else {
+                cur = stack.pop();
+            }
+        }
+        return res;
+    }
+}
