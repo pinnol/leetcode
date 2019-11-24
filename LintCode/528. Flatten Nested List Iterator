@@ -1,0 +1,64 @@
+// 错误代码
+
+import java.util.Iterator;
+
+public class NestedIterator implements Iterator<Integer> {
+    
+    Stack<Iterator<NestedInteger>> stack;
+    Iterator<NestedInteger> cur;
+    
+    public NestedIterator(List<NestedInteger> nestedList) {
+        // Initialize your data structure here.
+        stack = new Stack<>();
+        cur = nestedList.iterator();
+        
+    }
+
+    // @return {int} the next element in the iteration
+    @Override
+    public Integer next() {
+        if (!hasNext()) {
+            return null;
+        }
+        
+        while (!cur.hasNext() && !stack.isEmpty()) {
+            cur = stack.pop();
+        }
+        
+        if (!cur.hasNext()) {
+            return null;
+        }
+        
+        NestedInteger item = cur.next();
+        if (item.isInteger()) {
+            return item.getInteger();
+        } else {
+            while (!item.isInteger()) {
+                stack.push(cur);
+                List<NestedInteger> list = item.getList();
+                cur = list.iterator();
+                item = cur.next();
+            }
+            return item.getInteger();
+        }
+
+    }
+
+    // @return {boolean} true if the iteration has more element or false
+    @Override
+    public boolean hasNext() {
+        // 这里的判断条件只能说明在stack中还有iterator，但是不能保证stack中的iterator还有下一个元素。 
+        return cur.hasNext() || !stack.isEmpty();
+    }
+
+    @Override
+    public void remove() {
+        
+    }
+}
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i = new NestedIterator(nestedList);
+ * while (i.hasNext()) v.add(i.next());
+ */
