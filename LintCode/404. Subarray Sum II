@@ -1,0 +1,81 @@
+// 下面这个写法不行，因为是先减去A[i]，再increment指针，这样即便指针与i相同时，依然会有一个A[i]的sum。
+就是说sum与当前的pointer不同步。就不能去除一些错误的结果，比如minSum大于start的时候，即便right==i，我们都不能达成minSum <= start
+
+public class Solution {
+    /**
+     * @param A: An integer array
+     * @param start: An integer
+     * @param end: An integer
+     * @return: the number of possible answer
+     */
+    public int subarraySumII(int[] A, int start, int end) {
+        if (A == null || A.length== 0) {
+            return 0;
+        }
+        int left = 0;
+        int right = 0;
+        int minSum = 0;
+        int maxSum = 0;
+        int res = 0;
+        for (int i = 0; i < A.length; i++) {
+            minSum += A[i];
+            while (minSum > start && right < i) {
+                minSum -= A[right];                
+                right++;
+            }           
+            
+            maxSum += A[i];
+            while (maxSum >= end && left < right) {
+                maxSum -= A[left];
+                left++;
+            }
+            res += right - left + 1;
+        }
+        return res;
+    }
+}
+
+
+
+
+思路：使用同向双指针，minSum代表当前最小和（从right加到i），maxSum代表当前最大和（从left加到i）。遍历i。每次i对应的子数组数量为right-left。
+注意增加right的条件需要为minSum >= start，如果只是minSum > start，那么我们不能保证最终right对应的和是等于start的。
+就不知道是用right-left+1，还是right-left。
+为了使指针与当前和同步，可以先减A[i]，再increment 指针。
+
+time complexity: O(n)
+space complexity: O(1)
+
+public class Solution {
+    /**
+     * @param A: An integer array
+     * @param start: An integer
+     * @param end: An integer
+     * @return: the number of possible answer
+     */
+    public int subarraySumII(int[] A, int start, int end) {
+        if (A == null || A.length== 0) {
+            return 0;
+        }
+        int left = -1;
+        int right = -1;
+        int minSum = 0;
+        int maxSum = 0;
+        int res = 0;
+        for (int i = 0; i < A.length; i++) {
+            minSum += A[i];
+            while (minSum >= start && right < i) {
+                right++;               
+                minSum -= A[right];                
+            }           
+            
+            maxSum += A[i];
+            while (maxSum > end && left < right) {
+                left++;                
+                maxSum -= A[left];
+            }
+            res += right - left;
+        }
+        return res;
+    }
+}
