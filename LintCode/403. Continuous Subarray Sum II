@@ -1,0 +1,121 @@
+// 以下这种解法是错误的，注意当数组为circular的时候，某个数字可以被避开，如
+[4,10,13,4,-1,0,3,3,5]
+的答案是[5,3]，没有包括-1
+
+// 而当数组不是circular的时候，如果从-1后面的数开始，-1前面的和就会被抛弃，而-1前面的和大于0，答案就错了。
+// 本质上，非circular时，数组和不能稍有下降就重新开始，因为这会牺牲前面的整数和，而circular时，就可以完美避开这种下降。
+public class Solution {
+    /*
+     * @param A: An integer array
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    public List<Integer> continuousSubarraySumII(int[] A) {
+        List<Integer> res = new ArrayList<>();
+        if (A == null || A.length == 0) {
+            return res;
+        }
+        res.add(0);
+        res.add(0);
+        int ans = Integer.MIN_VALUE;
+        int sum = 0;
+        int n = A.length;
+        int[] idx = new int[2];
+        
+        for (int i = 0; i < 2 * n; i++) {
+            if (sum < 0) {
+                if (i >= n) {
+                    break;
+                }
+                sum = A[i % n];
+                idx[0] = idx[1] = i % n;
+            } else {
+                sum += A[i % n];
+                idx[1] = i % n;
+            }
+            
+            if (sum > ans) {
+                ans = sum;
+                res.set(0, idx[0]);
+                res.set(1, idx[1]);
+            }
+        }
+        return res;
+    }
+}
+
+思路： 先按照非circular找到max subarray，然后找到不circular时的min子数组，用整个数组的和total减去min subarray, 
+得到另一个可能的max subarray。两个作比较。注意处理特殊情况。
+
+time complexity：O(n)
+space complexity：O(1)
+public class Solution {
+    /*
+     * @param A: An integer array
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    class Result {
+        int max;
+        int pre, last;
+        Result() {
+            max= Integer.MIN_VALUE;
+            pre = 0;
+            last = 0;
+        }
+    }
+    public List<Integer> continuousSubarraySumII(int[] A) {
+        List<Integer> res = new ArrayList<>();
+        if (A == null || A.length == 0) {
+            return res;
+        }
+        Result max = findMaxArray(A, 1);
+        Result min = findMaxArray(A, -1);
+        min.max *= -1;
+        
+        int total = 0;
+        for (int i = 0; i < A.length; i++) {
+            total += A[i];
+        }
+        
+        // 如果total减最小子数组的差小于等于max子数组，依然使用max子数组的结果
+        if (total - min.max <= max.max) {
+            res.add(max.pre + 1);
+            res.add(max.last);
+
+        } else {
+        //  特殊情况，整个数组都是min子数组，此时结果不能没有值。
+            if (min.pre == -1 && min.last == A.length - 1) {
+                res.add(max.pre + 1);
+                res.add(max.last);
+            } else {
+                res.add(min.last + 1);
+                res.add(min.pre);
+            }
+        }
+        return res;
+    }
+    // coeff = 1: 找到数组中和最大的子数组。
+    // coeff = -1: 找到数组中和最小的子数组。
+    private Result findMaxArray(int[] A, int coeff) {
+        int sum = 0;
+        int minSum = 0;
+        // 在第一个数被加到sum之前, idx为-1
+        int minPreIdx = -1;
+        Result res = new Result();
+        for (int i = 0; i < A.length; i++) {
+            sum += A[i] * coeff; 
+            if (sum - minSum > res.max) {
+                res.max = sum - minSum;
+                res.pre = minPreIdx;
+                res.last = i;
+            }
+            // 使用前缀和找到i之前的最小子数组
+            if (sum < minSum) {
+                minSum = sum;
+                minPreIdx = i;
+            }
+        }
+        return res;
+    }
+    
+    
+}
