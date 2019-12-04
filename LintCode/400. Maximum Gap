@@ -30,6 +30,9 @@ public class Solution {
         }
         // System.out.println("min="+min);
         double size = (double) (max - min) / (nums.length - 1);
+        // 也可以下面这种写法，因为输入为整数，avgGap 向上ceil时，最多增长1的大小，而除非整个数组中的最大最小值之差小于1，
+            否则潜在答案的bucketMin值不可能被包含进前面一个桶中。
+        //int avgGap = (int) Math.ceil((double) (max - min) / (nums.length - 1));
         // System.out.println("size="+size);
         long[] bucketMin = new long[nums.length];
         long[] bucketMax = new long[nums.length];
