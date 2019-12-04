@@ -1,0 +1,118 @@
+思路：同向双指针，因为右指针向右走的时候，新的和一定大于当前和（nums是正数），左指针必然只能跟着向右走。
+
+time complexity: O(n)
+space complexity: O(1)
+
+public class Solution {
+    /**
+     * @param nums: an array of integers
+     * @param s: An integer
+     * @return: an integer representing the minimum size of subarray
+     */
+    public int minimumSize(int[] nums, int s) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int res = Integer.MAX_VALUE;
+        int sum = 0;
+        
+        for (int l = 0, r = 0; r < nums.length; r++) {
+            sum += nums[r];
+            
+            while (sum >= s) {
+                res = Math.min(res, r - l + 1);
+                sum -= nums[l];
+                l++;
+            }
+        }
+        
+        return res == Integer.MAX_VALUE? -1 : res; 
+    }
+}
+
+
+// 这题也可以把左指针作为主指针
+    public int minimumSize(int[] nums, int s) {
+        // write your code here
+        int j = 0, i = 0;
+        int sum =0;
+        int ans = Integer.MAX_VALUE;
+        for(i = 0; i < nums.length; i++) {
+            while(j < nums.length && sum < s) {
+                sum += nums[j];
+                j ++;
+            }
+            if(sum >=s) {
+                ans = Math.min(ans, j - i);
+            }
+            sum -= nums[i];
+        }
+        if(ans == Integer.MAX_VALUE)
+            ans = -1;
+        return ans;
+    }
+    
+    
+解法2：二分法
+思路：for循环右指针，左指针先取右指针到起始位置的mid，二分寻找左指针到右指针之间和大于等于s的位置。先用preSum求和。
+
+time complexity: O(nlog(n)) 寻找n次，每次log(n)时间二分查找。
+space complexity: O(n)
+
+public class Solution {
+    /**
+     * @param nums: an array of integers
+     * @param s: An integer
+     * @return: an integer representing the minimum size of subarray
+     */
+    public int minimumSize(int[] nums, int s) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int len = nums.length;
+        int[] preSum = new int[len + 1];
+        int res = Integer.MAX_VALUE;
+        
+        
+        for (int i = 1; i <= len; i++) {
+            preSum[i] += preSum[i - 1] + nums[i - 1];
+        }
+        
+        for (int r = 0; r < len; r++) {
+            if (preSum[r + 1] < s) {
+                continue;
+            }
+            System.out.println("r = " + r);
+            int l = findIdx(r, preSum, s);
+            System.out.println("l = " + l);
+            res = Math.min(r - l + 1, res);
+        }
+        
+        return res == Integer.MAX_VALUE? -1 : res;
+    }
+    
+    
+    private int findIdx(int r, int[] preSum, int s) {
+        
+        int start = 0;
+        int end = r;
+
+        while (start + 1 < end) {
+            int mid = (start + end) / 2;            
+            int sum = preSum[r + 1] - preSum[mid];
+            if (sum == s) {
+                return mid;
+            } else if (sum < s) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        
+        if (preSum[r + 1] - preSum[end] >= s) {
+            return end;
+        } 
+        return start;
+    }
+}
