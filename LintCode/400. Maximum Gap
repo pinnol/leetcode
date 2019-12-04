@@ -30,8 +30,10 @@ public class Solution {
         }
         // System.out.println("min="+min);
         double size = (double) (max - min) / (nums.length - 1);
-        // 也可以下面这种写法，因为输入为整数，avgGap 向上ceil时，最多增长1的大小，而除非整个数组中的最大最小值之差小于1，
-            否则潜在答案的bucketMin值不可能被包含进前面一个桶中。
+        // 也可以下面这种写法，avgGap 一定小于最大的差值，又因为数字都是整数，即便向上ceiling取证，avgGap也不可能大于最大差值，
+           两个数不可能被包含在同一个桶中
+           比如[2 4 6 9], 最大差值为3（即9 - 6），avgGap为2.3，向上取整为3，即便6正好在桶的开始，9也会成为下一个桶的开始，不可能在同一个桶里。
+           因此，除非最大差值小于1（即数字不是int），向上ceiling时，avgGap才有可能在大于最大差值。
         //int avgGap = (int) Math.ceil((double) (max - min) / (nums.length - 1));
         // System.out.println("size="+size);
         long[] bucketMin = new long[nums.length];
