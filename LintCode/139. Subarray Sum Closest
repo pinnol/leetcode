@@ -1,3 +1,126 @@
-思路：因为时间复杂度只需要做到nlog(n)，我们只需要创建一个list，存储pair，再排序，比较两个前缀和的差是否最小就可以了。
-这里的难点在于integer max_value，使用从0开始的前缀和可以让前缀和中有两个最大值，他们的差等于0，就可以避免判断。否则需要使用long初始化res。
+思路：因为时间复杂度只需要做到nlog(n)，我们只需要创建一个list，存储pair，再排序，比较两个前缀和的差是否最小就可以了。如果两个前缀和的差最接近0，
+说明以这两个前缀和对应的index作为起始和结尾的子数组的和最接近0。
+这里的难点在于integer max_value，如果使用从0开始的前缀和可以让前缀和中有两个最大值，他们的差等于0，就可以避免判断。否则需要使用long初始化res。
 另一个难点在于不要忘了更新res。
+
+time complexity: O(nlog(n))
+space complexity: O(n)
+
+
+注意我的写法与九章的不同
+public class Solution {
+    /*
+     * @param nums: A list of integers
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    class Pair {
+        int sum;
+        int idx;
+        Pair(int sum, int idx) {
+            this.sum = sum;
+            this.idx = idx;
+        }
+    }
+    public int[] subarraySumClosest(int[] nums) {
+        int[] res = new int[2];
+        if (nums == null || nums.length == 0) {
+            return res;
+        }
+        int n = nums.length;
+        int sum = 0;
+        List<Pair> list = new ArrayList<>();
+        list.add(new Pair(0, -1));
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            list.add(new Pair(sum, i));
+        }
+        
+        Collections.sort(list, new Comparator<Pair>(){
+            public int compare(Pair a, Pair b) {
+                if (a.sum == b.sum) {
+                    return a.idx - b.idx;
+                }
+                
+                return a.sum - b.sum;
+            }
+        });
+        
+        long diff = Long.MAX_VALUE;
+        int idx1 = 0;
+        int idx2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (list.get(i + 1).sum - list.get(i).sum < diff) {
+                diff = list.get(i + 1).sum - list.get(i).sum;
+                idx1 = list.get(i).idx;
+                idx2 = list.get(i + 1).idx;
+            }
+        }
+        
+         // 这里写的与jiuzhang的solution不同，我是先找到最小，然后再加1，而九章是找到就加一（写在了if判断中），
+         //   我这种写法在如果使用diff = Integer.MAX_VALUE，在遇到[0, Integer.MAX_VALUE]时会出错，因为此时找到的结果是[0,0]，
+         //   不需要再加一了九章的写法就没有这个危险。
+        if (idx1 < idx2) {
+            res[0] = idx1 + 1;
+            res[1] = idx2;
+        } else {
+            res[0] = idx2 + 1;
+            res[1] = idx1;
+        }
+        return res;
+    }
+}
+
+九章：
+class Pair {
+    int sum;
+    int index;
+    public Pair(int s, int i) {
+        sum = s;
+        index = i;
+    }
+}
+    
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @return: A list of integers includes the index of the first number 
+     *          and the index of the last number
+     */
+    public int[] subarraySumClosest(int[] nums) {
+        int[] res = new int[2];
+        if (nums == null || nums.length == 0) {
+            return res;
+        } 
+        
+        int len = nums.length;
+        if(len == 1) {
+            res[0] = res[1] = 0;
+            return res;
+        }
+        Pair[] sums = new Pair[len+1];
+        int prev = 0;
+        sums[0] = new Pair(0, 0);
+        for (int i = 1; i <= len; i++) {
+            sums[i] = new Pair(prev + nums[i-1], i);
+            prev = sums[i].sum;
+        }
+        Arrays.sort(sums, new Comparator<Pair>() {
+           public int compare(Pair a, Pair b) {
+               return a.sum - b.sum;
+           } 
+        });
+        int ans = Integer.MAX_VALUE;
+        for (int i = 1; i <= len; i++) {
+            
+            if (ans > sums[i].sum - sums[i-1].sum) {
+                ans = sums[i].sum - sums[i-1].sum;
+                int[] temp = new int[]{sums[i].index - 1, sums[i - 1].index - 1};
+                Arrays.sort(temp);
+                res[0] = temp[0] + 1;
+                res[1] = temp[1];
+            }
+        }
+        
+        return res;
+    }
+}
