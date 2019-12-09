@@ -1,0 +1,83 @@
+思路：使用前缀和数组，一个方块的和是preSum[i][j] - preSum[i - k][j] - preSum[i][j - k] + preSum[i - k][j - k]
+      preSum[i][j] = matrix[i - 1][j - 1] + preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1]
+      
+time complexity: O(m * n)
+space complexoty: O(m * n)
+
+public class Solution {
+    /**
+     * @param matrix: an integer array of n * m matrix
+     * @param k: An integer
+     * @return: the maximum number
+     */
+    public int maxSlidingMatrix(int[][] matrix, int k) {
+        if (matrix == null || matrix.length < k || matrix[0].length < k) {
+            return 0;
+        }
+        
+        
+        
+        int n = matrix.length;
+        int m = matrix[0].length;
+        
+        int[][] preSum = new int[n + 1][m + 1];
+        
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                preSum[i][j] = preSum[i - 1][j] + preSum[i][j - 1] + matrix[i - 1][j - 1] - preSum[i - 1][j - 1];
+            }
+        }
+        
+        int res = Integer.MIN_VALUE; 
+        
+        for (int i = k; i <= n; i++) {
+            for (int j = k; j <= m; j++) {
+                res = Math.max(res, preSum[i][j] - preSum[i - k][j] - preSum[i][j - k] + preSum[i - k][j - k]);        
+            }
+        }
+        
+        return res;
+    }
+}
+
+================================================================
+写法二：
+
+可以将空间优化为O(m)
+
+public class Solution {
+    /*
+     * @param matrix: an integer array of n * m matrix
+     * @param k: An integer
+     * @return: the maximum number
+     */
+    public int maxSlidingMatrix(int[][] matrix, int k) {
+        //write your code here
+        int n = matrix.length;
+        int m = matrix[0].length;
+        if(n<k || m<k) {
+            return 0;
+        }
+        int max = Integer.MIN_VALUE;
+        int[] col = new int[m];
+        for(int i = 0; i < n; i++) {
+            int sum = 0;
+            for(int j = 0; j < m; j++) {
+                col[j] += matrix[i][j];
+                if(i>=k) {
+                    col[j] -= matrix[i-k][j];
+                }
+                if(i>=k-1) {
+                    sum += col[j];
+                    if(j>=k) {
+                        sum -= col[j-k];
+                    }
+                    if(j>=k-1) {
+                        max = Math.max(max, sum);
+                    }
+                }
+            }
+        }
+        return max;
+    }
+}
