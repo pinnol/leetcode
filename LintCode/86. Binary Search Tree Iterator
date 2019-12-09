@@ -1,0 +1,113 @@
+思路：使用stack存储下一个node，如果stack为空，说明没有下一个node。当调用next()时，需要做一定的处理：如果当前node有right节点，
+    要把right subtree的所有左节点push进stack（因为二叉搜索树的左节点一定比根节点和右子树小），如果没有右子树，说明当前path下，
+    只有向上才能找到比当前节点稍大一点的node，因此需要不断pop出走到这个节点的父节点，以为只有当初父节点被返回过一次以后，
+    父节点才会把right子树push进stack，此时需要原样返回。注意在push right subtree的时候不要把当前节点pop出去，因为需要pop父节点时，
+    我们还要使用stack.peek()来判断当前节点是不是peek的右节点，如果把当前节点pop出去了，当前节点就永远不可能是peek，就永远不能用peek判断。
+    
+time complexity: O(1) in average
+space complexity: O(h) h是树的高度  如果要实现O(1) extra memory space，参考in-order successor
+
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ * Example of iterate a tree:
+ * BSTIterator iterator = new BSTIterator(root);
+ * while (iterator.hasNext()) {
+ *    TreeNode node = iterator.next();
+ *    do something for node
+ * } 
+ */
+
+
+public class BSTIterator {
+    Stack<TreeNode> stack;
+    
+    
+    /*
+    * @param root: The root of binary tree.
+    */
+    public BSTIterator(TreeNode root) {
+        stack = new Stack<>();
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+    }
+
+    /*
+     * @return: True if there has next node, or false
+     */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /*
+     * @return: return next node
+     */
+    public TreeNode next() {
+        TreeNode res = stack.peek();
+        TreeNode curr = res;
+        if (curr.right != null) {
+            curr = curr.right;
+            while (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            }
+        } else {
+            curr = stack.pop();
+            while (!stack.isEmpty() && curr == stack.peek().right) {
+                curr = stack.pop();
+            }
+        }
+        return res;
+    }
+}
+
+
+
+
+===========================================================
+写法二：
+这种写法使用了遍历的思想，可以pop出有右子树的节点。
+
+public class BSTIterator {
+    private Stack<TreeNode> stack = new Stack<>();
+    TreeNode next = null;
+    void AddNodeToStack(TreeNode root) {
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+    } 
+    
+    // @param root: The root of binary tree.
+    public BSTIterator(TreeNode root) {
+        next = root;
+    }
+
+    //@return: True if there has next node, or false
+    public boolean hasNext() {
+        if (next != null) {
+            AddNodeToStack(next);
+            next = null;
+        }
+        return !stack.isEmpty();
+    }
+    
+    //@return: return next node
+    public TreeNode next() {
+        if (!hasNext()) {
+            return null;
+        }
+        TreeNode cur = stack.pop();
+        next = cur.right;
+        return cur;
+    }
+}
