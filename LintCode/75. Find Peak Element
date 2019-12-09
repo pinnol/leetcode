@@ -1,0 +1,34 @@
+思路：通过二分法每次排除一半的结果，如果mid元素比下一个元素还大，证明一定还有peak在左边，反之，一定有peak在右边。
+
+time complexity: O(log(n))
+space complexity: O(1)
+
+public class Solution {
+    /**
+     * @param A: An integers array.
+     * @return: return any of peek positions.
+     */
+    public int findPeak(int[] A) {
+        if (A == null || A.length == 0) {
+            return -1;
+        }
+        
+        int start = 0;
+        int end = A.length - 1;
+        
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (A[mid] > A[mid + 1]) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        
+        if (A[end] > A[end + 1] && A[end] > A[end - 1]) {
+            return end;
+        }
+        
+        return start;
+    }
+}
