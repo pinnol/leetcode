@@ -1,0 +1,90 @@
+思路1：使用两个queue实现stack，queue1存放当前的数据，当需要pop时，将queue1中的数字逐个移动到queue2中，直到queue1中只剩下一个数字，
+      也就是我们想要pop的数字，这时候在将queue2当成queue1，queue1当成queue2，减少再一次逐个移动数字的花销。
+      
+时间复杂度：pop - O(n)，top - O(1), push - O(1), empty - n(1)
+空间复杂度：O(n)
+
+class MyStack {
+
+    Queue<Integer> queue1;
+    Queue<Integer> queue2;
+    Queue<Integer> temp;
+    int top;
+    /** Initialize your data structure here. */
+    public MyStack() {
+        queue1 = new LinkedList<>();
+        queue2 = new LinkedList<>();
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        queue1.add(x);
+        top = x;
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        while (queue1.size() > 1) {
+            top = queue1.remove();
+            queue2.add(top); 
+        }
+        int res = queue1.remove();
+        temp = queue2;
+        queue2 = queue1;
+        queue1 = temp;
+        return res;
+    }
+    
+    /** Get the top element. */
+    public int top() {
+        return top;
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return queue1.isEmpty();
+    }
+}
+
+
+==============================================================================
+
+思路2：只使用一个queue，在push的时候，不断更新栈顶，将最后添加的数字switch到queue的最前面。
+
+时间复杂度：push - O(n), pop - O(1), top - O(1), empty - O(1)
+空间复杂度：O(n)
+
+class MyStack {
+
+    /** Initialize your data structure here. */
+    Queue<Integer> queue;
+    public MyStack() {
+        queue = new LinkedList<>();
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        queue.add(x);
+        int sz = queue.size();
+        while (sz > 1) {
+            queue.add(queue.remove());
+            sz--;
+        }
+        
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        return queue.remove();
+    }
+    
+    /** Get the top element. */
+    public int top() {
+        return queue.peek();
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return queue.isEmpty();
+    }
+}
