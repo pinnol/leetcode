@@ -1,0 +1,70 @@
+对应lintcode 40. Implement Queue by Two Stacks（https://www.lintcode.com/problem/implement-queue-by-two-stacks/description）
+
+思路：创建两个stack，用stack2存储每次加入的数字，这样每次加入的数字会被放在stack2的栈顶，
+     当需要使用pop或者peek方法时，去查询stack1，如果stack1是空的，就逐个将stack2的数字pop出，并添加到
+     stack1中，这样，最终被添加的数字会先放到stack1中，而最先被添加的数字就会在stack1的上方。
+     
+时间复杂度：平均O(1)
+空间复杂度：O(n)
+
+
+
+class MyQueue {
+    Stack<Integer> stack1;
+    Stack<Integer> stack2;
+
+    /** Initialize your data structure here. */
+    public MyQueue() {
+        stack1 = new Stack<>();
+        stack2 = new Stack<>();
+    }
+    
+    /** Push element x to the back of queue. */
+    public void push(int x) {
+        stack2.push(x);
+    }
+    
+    /** Removes the element from in front of queue and returns that element. */
+    public int pop() {
+        if (!stack1.isEmpty()) {
+            return stack1.pop();
+        } else {
+            moveIntoStack1();
+            if (!stack1.isEmpty())
+                return stack1.pop();
+        }
+        return -1;
+    }
+    
+    /** Get the front element. */
+    public int peek() {
+        if (!stack1.isEmpty()) {
+            return stack1.peek();
+        } else {
+            moveIntoStack1();
+            if (!stack1.isEmpty())
+                return stack1.peek();
+        }
+        return -1;
+    }
+    
+    /** Returns whether the queue is empty. */
+    public boolean empty() {
+        return stack1.isEmpty() && stack2.isEmpty();
+    }
+    
+    public void moveIntoStack1() {
+        while (!stack2.isEmpty()) {
+            stack1.push(stack2.pop());
+        } 
+    }
+}
+
+/**
+ * Your MyQueue object will be instantiated and called as such:
+ * MyQueue obj = new MyQueue();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.peek();
+ * boolean param_4 = obj.empty();
+ */
