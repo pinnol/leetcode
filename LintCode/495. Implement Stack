@@ -1,0 +1,47 @@
+思路：通过array实现stack，因为array可以记录最后一个添加的数字的位置。
+
+时间复杂度：O(1)
+空间复杂度：O(n)
+
+public class Stack {
+    /*
+     * @param x: An integer
+     * @return: nothing
+     */
+    List<Integer> array = new ArrayList<>(); 
+    public void push(int x) {
+        array.add(x);
+    }
+
+    /*
+     * @return: nothing
+     */
+    public void pop() {
+        // write your code here
+        int n = array.size();
+        if (n == 0) {
+            return;
+        }
+        array.remove(n - 1);
+    }
+
+    /*
+     * @return: An integer
+     */
+    public int top() {
+        // write your code here
+        int n = array.size();
+        if (n == 0) {
+            return -1;
+        }
+        return array.get(n - 1);
+    }
+
+    /*
+     * @return: True if the stack is empty
+     */
+    public boolean isEmpty() {
+        // write your code here
+        return array.size() == 0;
+    }
+}
