@@ -7,7 +7,7 @@
 本题最好使用dummy node，不然有许多中情况需要考虑，容易出错，也不容易创建子函数。
 
 思路1：使用doubly linkedlist，每次get或者set时，把对应的node放到队尾，如果超出capacity，就要删除对应的点。
-
+有两个地方需要注意，一个是两个dummy node要互相指向，另一个是set时调用类的get，而不是map的get
 
 time complexity: O(1)
 space complexity: O(capacity of cache)
@@ -57,6 +57,7 @@ public class LRUCache {
 
     public void set(int key, int value) {			//数据放入缓存
         // get 这个方法会把key挪到最末端，因此，不需要再调用 move_to_tail
+        // 注意要使用get，而不是map的get
         if (get(key) != -1) {
             hs.get(key).value = value;
             return;
