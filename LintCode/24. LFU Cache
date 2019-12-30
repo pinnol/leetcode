@@ -1,0 +1,116 @@
+思路：使用一种链表数组的方式存储数字，数组的每个元素是一个链表，对应着同一频率下的所有节点（数字）。当get或者set时，增加频率。
+    关键在于数据结构的封装。
+
+
+
+class LFUCache {
+    class Node{
+        int k;
+        int v;
+        int freq;
+        Node prev;
+        Node next;
+        public Node(int key, int val){
+            k = key;
+            v = val;
+            freq = 0;
+        }
+        
+        public String toString(){
+            return "key=" + k +", val=" + v + ", freq=" + freq;
+        }
+    };
+    
+    class NodeList{
+        Node head;
+        Node tail;
+        public NodeList(){
+            head = new Node(-1, -1);
+            tail = new Node(-1, -1);
+            head.next = tail;
+            tail.prev = head;
+        }
+        
+        void insert(Node n){
+            n.next = head.next;
+            n.prev = head;
+            head.next.prev = n;
+            head.next = n;
+        }
+        
+        Node remove(Node n){
+            n.prev.next = n.next;
+            n.next.prev = n.prev;
+            return n;
+        }
+        
+        Node removeLast(){
+            Node n = tail.prev;
+            n.prev.next = tail;
+            tail.prev = n.prev;
+            return n;
+        }
+        
+    }
+    
+    private HashMap<Integer, Node> m;
+    private HashMap<Integer, NodeList> freq2Node = new HashMap<>();
+    private int capacity;
+    private int minFreq = 0;
+    
+
+    public LFUCache(int capacity) {
+        m = new HashMap<>(capacity);
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        if(!m.containsKey(key)){
+            return -1;
+        }
+        
+        Node n = m.get(key);
+        boostFreq(n);
+        return n.v;
+    }
+    
+    public void set(int key, int value) {
+        if(capacity <= 0){
+            return;
+        }
+        if(!m.containsKey(key)){
+            if(m.size() >= capacity){
+                Node n2Remove = freq2Node.get(minFreq).removeLast();
+                m.remove(n2Remove.k);
+                //System.out.println("L84 " + n2Remove.toString());
+            }
+            Node n = new Node(key, value);
+            m.put(key, n);
+            minFreq = 0;
+            if(!freq2Node.containsKey(n.freq)){
+                freq2Node.put(n.freq, new NodeList());
+            }
+            freq2Node.get(n.freq).insert(n);
+            return;
+        }
+        
+        Node n = m.get(key);
+        n.v = value;
+        boostFreq(n); 
+    }
+    
+    private void boostFreq(Node n){
+        NodeList nl = freq2Node.get(n.freq);
+        nl.remove(n);
+        if(minFreq == n.freq && nl.head.next == nl.tail){
+            minFreq++;
+        }
+        
+        n.freq++;
+        
+        if(!freq2Node.containsKey(n.freq)){
+            freq2Node.put(n.freq, new NodeList());
+        }
+        freq2Node.get(n.freq).insert(n);
+    }
+}
