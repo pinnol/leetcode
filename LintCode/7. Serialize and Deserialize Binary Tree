@@ -1,0 +1,98 @@
+思路：BFS遍历节点，先把所有的节点存到queue中，在序列化。本方法除了移除结尾的空白（空节点），中间的空节点并没有做空间优化，
+    这样就避免了在反序列化的时候，需要更复杂的方法推算原始结构。
+    
+    在序列化的时候，因为我们要保存所有的节点，就不能使用LinkedList的pop方法，而只能用ArrayList的get方法来读取节点。
+    
+时间复杂度：O(# of nodes)
+空间复杂度：O(# of nodes)
+    
+public class Solution {
+    /**
+     * This method will be invoked first, you should design your own algorithm 
+     * to serialize a binary tree which denote by a root node to a string which
+     * can be easily deserialized by your own "deserialize" method later.
+     */
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "NONE";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        List<TreeNode> queue = new ArrayList<>();
+        
+        queue.add(root);
+        for (int i = 0; i < queue.size(); i++) {
+            TreeNode curr = queue.get(i);
+            if (curr != null) {
+                queue.add(curr.left);
+                queue.add(curr.right);
+            }
+        }
+        
+        while (queue.get(queue.size() - 1) == null) {
+            queue.remove(queue.size() - 1);
+        }
+        
+        sb.append(root.val + "");
+
+        for (int i = 1; i < queue.size(); i++) {
+            TreeNode curr = queue.get(i);
+            
+            if (curr == null) {
+                sb.append(",#");
+            } else {
+                sb.append(',');
+                sb.append(curr.val);
+            }
+
+        }
+        return sb.toString();
+    }
+
+    /**
+     * This method will be invoked second, the argument data is what exactly
+     * you serialized at method "serialize", that means the data is not given by
+     * system, it's given by your own serialize method. So the format of data is
+     * designed by yourself, and deserialize it here as you serialize it in 
+     * "serialize" method.
+     */
+    public TreeNode deserialize(String data) {
+        if (data.equals("NONE")) {
+            return null;
+        }
+        
+        String[] vals = data.split(",");
+        int index = 0;
+        boolean isLeft = true;
+        ArrayList<TreeNode> nodes = new ArrayList<>();
+        
+        
+        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
+        nodes.add(root);
+        
+        for (int i = 1; i < vals.length; i++) {
+            if (!vals[i].equals("#")) {
+                TreeNode node = new TreeNode(Integer.parseInt(vals[i]));
+                if (isLeft) {
+                    nodes.get(index).left = node;
+                } else {
+                    nodes.get(index).right = node;
+                }
+
+                nodes.add(node);
+            }
+            
+            if (!isLeft) {
+                index++;
+            }
+            
+            isLeft = !isLeft;
+        }
+        
+        return root;
+        
+    }
+}
+    
+
+
