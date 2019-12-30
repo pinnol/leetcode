@@ -1,0 +1,87 @@
+思路：BFS添加每个节点到queue中，如果某个节点的子节点是null，那么这个子节点对应的子树将不再被添加到string中。
+     反序列化时，遍历value，如果value不是‘#’，说明节点存在，需要创建并添加到queue中；如果是'#'，说明节点不存在，那么我们直接略过。
+     
+     题的关键在于认为保证，当我们需要创建节点并寻找父节点时，queue中的第一个节点一定是我们需要的父节点。避免了寻找对应父节点的麻烦。
+     
+时间复杂度：Time Complexity: O(n) (assume there are n given tree nodes)
+
+
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "#";
+        }
+        
+        Queue<TreeNode> list = new LinkedList<>();
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(root.val);
+        list.add(root);
+        while (!list.isEmpty()) {
+            TreeNode node = list.poll();
+            if (node.left == null) {
+                sb.append(",#");
+            } else {
+                sb.append(',');
+                sb.append(node.left.val);
+                list.offer(node.left);
+            }
+            
+            if (node.right == null) {
+                sb.append(",#");
+            } else {
+                sb.append(',');
+                sb.append(node.right.val);
+                list.offer(node.right);
+            }
+        }
+        
+        // System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    
+    public TreeNode deserialize(String data) {
+        if (data.equals("#")) {
+            return null;
+        }
+        String[] vals = data.split(",");
+        Queue<TreeNode> queue = new LinkedList<>();
+        
+        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
+        queue.offer(root);
+        int index = 1;
+        
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            if (vals[index].equals("#")) {
+                index++;
+            } else {
+                node.left = new TreeNode(Integer.parseInt(vals[index++]));
+                queue.offer(node.left);
+            }
+            
+            if (vals[index].equals("#")) {
+                index++;
+            } else {
+                node.right = new TreeNode(Integer.parseInt(vals[index++]));
+                queue.offer(node.right);
+            }
+
+        }
+        return root;
+       
+    }
+}
