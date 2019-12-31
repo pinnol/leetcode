@@ -1,0 +1,61 @@
+思路：两次调用binary search，第一次寻找开始位置，第二次寻找结束位置。
+    需要注意start和end都是index，不能直接和target比较，而应该用nums[start]
+
+time complexity:O(log(n))
+space complexity:O(1)
+
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int[] res = new int[2];
+        if (nums == null || nums.length == 0) {
+            res[0] = -1;
+            res[1] = -1;
+            return res;
+        }
+        
+        int start = 0, end = nums.length - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            // 这里要寻找开始位置，所以start应该小于target，end大于等于target，这样start和end之中才有肯能包含起始位置。
+            if (nums[mid] >= target) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        // nums[start] == target是特殊情况，如整个数组都等于同一个数，那么start一直到循环结束都是初始值。
+        if (nums[start] == target) {
+            res[0] = start;
+        } else if (nums[end] == target) {
+            res[0] = end;
+        } else {
+            // 前面两种情况都没找到，说明我们没有找到target，之后也不可能找到。直接返回。
+            res[0] = -1;
+            res[1] = -1;
+            return res;
+        }
+        
+        start = 0; 
+        end = nums.length - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (nums[mid] > target) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        
+        if (nums[end] == target) {
+            res[1] = end;
+        } else if (nums[start] == target) {
+            res[1] = start;
+        }
+        
+        return res;
+        
+        
+    }
+    
+    
+}
