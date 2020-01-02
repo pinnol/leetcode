@@ -14,6 +14,10 @@ minLast MIN_VALUE    1   2   5   6   7   MAX_VALUE   MAX_VALUE
 
 等我们遍历到i=5，也就是数字3的时候，我们会替换掉5，但是长度为4 和 5的minLast会保存，minLast单调递增。
 
+时间复杂度：O(nlogn)
+空间复杂度：O(n)
+
+
 public class Solution {
     /**
      * @param nums: The integer array
@@ -62,6 +66,9 @@ public class Solution {
 对于每个数字nums[i]，枚举前面所有小于自己的数字nums[j]，则f[i] = max{f[j]} + 1. 如果没有比自己小的，f[i] = 1;
 
 时间复杂度：O(n^2)
+空间复杂度：O(n)
+
+
 public class Solution {
     /**
      * @param nums: The integer array
