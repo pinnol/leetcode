@@ -1,5 +1,7 @@
-思路：判断目标值在每次binary search后在哪一边，相比一般的binary search来说划分的情况种类更多，有四种：先根据mid与pivot之间的关系，
-      推断mid和array的哪一边之间是sorted的，然后根据mid和target的关系，以及target和pivot的关系再细分。注意不能忽略target和pivot之间的关系。
+思路：判断目标值在每次binary search后在哪一边，相比一般的binary search来说划分的情况种类更多，有四种：先根据mid与start和end之间的关系，
+      推断mid和array的哪一边之间是sorted的，然后根据mid和target的关系，以及target和start(end)的关系再细分。
+      注意不能忽略target和pivot之间的关系。
+      
       考察了binary search的基本应用原则：sorted
       
 时间复杂度: O(logn)
@@ -23,15 +25,16 @@ public class Solution {
             int mid = start + (end - start) / 2;
             if (A[mid] == target) {
                 return mid;
-            } else if (A[mid] >= A[0]) {
+                // 也可以写成A[0]，因为没有重复值
+            } else if (A[mid] >= A[start]) {
                 // 不能只写target <= A[mid]，这样无法判断target是否在sorted的区间内
-                if (target <= A[mid] && target >= A[0]) {
+                if (target <= A[mid] && target >= A[start]) {
                     end = mid; 
                 } else {
                     start = mid;
                 }
             } else {
-                if (target >= A[mid] && target <= A[n - 1]) {
+                if (target >= A[mid] && target <= A[end]) {
                     start = mid;
                 } else {
                     end = mid;
