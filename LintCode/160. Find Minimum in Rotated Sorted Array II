@@ -1,0 +1,43 @@
+思路：最坏情况是数组除了一个元素外全部相等，如[1,1,1....,1] 里有一个0，时间复杂度为O(n)。
+
+
+
+time complexity: O(n)
+space complexity: O(1)
+
+
+public class Solution {
+    /**
+     * @param nums: a rotated sorted array
+     * @return: the minimum number in the array
+     */
+    public int findMin(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int start = 0, end = nums.length - 1;
+        int mid;
+        while (start + 1 < end) {
+            mid = start + (end - start) / 2;
+            while (nums[start] == nums[end]) {
+                // start++和end--只能用一个，因为我们不能确定start和end是不是就已经是最小值了，两个都用有可能抛弃了答案。
+                start++;
+                mid = start + (end - start) / 2;
+                if (start > end) {
+                    return nums[end];
+                }
+            }
+            
+            
+            if (nums[mid] > nums[end]) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        
+        return Math.min(nums[start], nums[end]);
+        
+    }
+}
