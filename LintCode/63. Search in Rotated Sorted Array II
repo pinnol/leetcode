@@ -1,0 +1,56 @@
+思路：仍然是二分法，只不过要注意A[start] == A[mid] && A[mid] == A[end]的情况，如[9,5,6,7,8,9,9,9,9,9,9]找8，
+    两边都相等时不好找哪一边是sorted的，这时可以start++ and end--，绕开这个情况。
+
+time complexity: O(n) 如果整个数组都是相等的，就一直要改变start和end
+space complexity: O(1)
+
+
+public class Solution {
+    /**
+     * @param A: an integer ratated sorted array and duplicates are allowed
+     * @param target: An integer
+     * @return: a boolean 
+     */
+    public boolean search(int[] A, int target) {
+        if (A == null || A.length == 0) {
+            return false;
+        }
+        
+        int n = A.length;
+        int start = 0, end = A.length - 1;
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (A[mid] == target) {
+                return true;
+            } 
+            // 之前已经判断过一次mid是否等于target了，所以被绕开的index一定不是target的位置。
+            while(A[start] == A[mid] && A[mid] == A[end]){
+                start++;
+                end--;
+                if(start > end){
+                    return false;
+                }
+            }
+            
+            if (A[mid] >= A[start]) {
+                if (target <= A[mid] && target >= A[start]) {
+                    end = mid; 
+                } else {
+                    start = mid;
+                }
+            } else {
+                if (target >= A[mid] && target <= A[end]) {
+                    start = mid;
+                } else {
+                    end = mid;
+                }
+            }
+        }
+        
+        
+        if (A[start] == target || A[end] == target) {
+            return true;
+        } 
+        return false;
+    }
+}
