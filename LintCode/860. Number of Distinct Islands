@@ -1,0 +1,73 @@
+思路：使用set存储dfs中每个节点相对于初始节点的位置，这里有一些trick，首先，使用dx dy数组提前判断下一轮dfs是否在bound内，这样递归调用dfs的时候
+    就可以直接将string加入到这条路径上。同时，我们要使用相对于初始节点的方法，而不是只记录方向，如上下左右，这样就避免以下特殊情况，如
+    11000
+    01111
+    01001
+  和
+    11000
+    01111
+    00101
+会当做同一个岛: 返回的都是 右右下右右右下下;
+
+时间复杂度：O(mn)
+空间复杂度：O(mn)
+
+
+public class Solution {
+    /**
+     * @param grid: a list of lists of integers
+     * @return: return an integer, denote the number of distinct islands
+     */
+     
+    int m;
+    int n;
+    Set<String> set;
+    int ix = 0;
+    int iy = 0;
+    
+    int[] dx = new int[]{-1, 0, 1, 0};
+    int[] dy = new int[]{0, 1, 0, -1};
+    
+    public int numberofDistinctIslands(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        m = grid.length;
+        n = grid[0].length;
+        set = new HashSet<>();
+        StringBuilder sb;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    sb = new StringBuilder();
+                    ix = i;
+                    iy = j;
+                    dfs(i, j, grid, sb);
+                    set.add(sb.toString());
+                }
+            }
+        }
+        
+        return set.size();
+    }
+    
+    
+    
+    private void dfs(int x, int y, int[][] grid, StringBuilder sb) {
+        grid[x][y] = 0;
+        sb.append(x - ix);
+        sb.append("+");
+        sb.append(y - iy);
+        sb.append(" ");
+        
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 1) {
+                dfs(nx, ny, grid, sb);
+            }
+        }
+        
+    }
+}
