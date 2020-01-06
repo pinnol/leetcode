@@ -1,0 +1,82 @@
+思路：对字符串进行从左到右的遍历，如果出现左括号“（”，数量加一，出现右括号“）”，count减一，当发现数量小于0的时候，说明出现异常，左右符号不匹配，
+需要删除任意一个右括号，然后将减去右括号的新string放入下一次dfs。需要注意的是，因为有可能有连续的又括号，如(()))，此时删除任意一个右括号的结果
+都是(())，我们只能把一个结果放入result，不然会出现重复解。这里，我们使用lastRemove来记录上一次删除的右括号，就可以避免重复解了。
+例如，
+( ( ) ( ) ) ) )
+
+第一次遍历是
+( ( ) ( ) ) ) )
+j   1   2   i
+
+我们既可以删除第1个右括号，又可以删除第2个右括号。
+
+如果删除第1个，lastRemove记为坐标2，
+新string是 ( ( ( ) ) ) )
+              j       i
+再删除右括号的时候将从坐标2开始，结果是 ( ( ( ) ) ) 
+
+如果删除第2个，并且不记录lastRemove
+新string是 ( ( ) ( ) ) )
+                      i
+因为我们没有记录lastRemove，所以寻找可删除的右括号的时候将从index 0开始，那么删除index 2的右括号一样可以满足valid parentheses，
+但是结果与 ( ( ( ) ) )重复了。而记录lastRemove = 4就可以避免这种情况。
+
+
+当检查过右括号比左括号多的情况后，我们有两种情况，一个是valid parentheses，另一个是左括号比右括号总数多，此时我们需要判断一下，然后检查一遍后者。
+否则就加入结果。
+
+时间复杂度：
+空间复杂的：
+
+public class Solution {
+    
+    char[][] patterns = { {'(', ')'}, {')', '('} };
+    
+    public List<String> removeInvalidParentheses(String s) {
+        List<String> ret = new ArrayList<>();
+       
+        dfs(s, 0, 0, patterns[0], ret);
+        return ret;
+    }
+    
+    private void dfs(String s, int start, int lastRemove, char[] pattern, List<String> ret) {
+        int count = 0, n = s.length();
+        for (int i = start; i < n; i ++) {
+            if (s.charAt(i) == pattern[0]) 
+            { 
+                count ++;
+            }
+            if (s.charAt(i) == pattern[1]) 
+            { 
+                count --;
+            }
+            if (count < 0) 
+            {
+                for (int j = lastRemove; j <= i; j ++) 
+                {
+                    // j == lastRemove时，可以直接处理，不需要考虑是否与前一个重复，因为即便重复，在最终的结果上也是删掉了两个连续的括号，
+                    而不是删除一个括号，不会出现重复解。
+                    if (s.charAt(j) == pattern[1] && (j == lastRemove || s.charAt(j) != s.charAt(j - 1))) 
+                    {
+                        dfs(s.substring(0, j) + s.substring(j + 1), i, j, pattern, ret);
+                    }
+                }
+                // 能进入这个if块就说明，当前有异常，不可能是valid，直接返回。
+                return;
+            }
+        }
+
+        
+        s = new StringBuilder(s).reverse().toString();
+        // 判断当前处理的是不是右括号多于左括号的情况。
+        // 如果是，就还需要再处理左括号多于右括号的情况
+        if (pattern[0] == patterns[0][0]) 
+        {
+            dfs(s, 0, 0, patterns[1], ret);
+        } 
+        else 
+        { 
+            ret.add(s); 
+        }
+    }
+}
