@@ -1,0 +1,39 @@
+思路：建立一个Map，key是String，value是list。本题的难点在于如何建立key，这里选用的是将string排序作为key，也可以将其编码。
+
+时间复杂度：O(string个数 * 最长的string长度 * log(最长的string长度))
+空间复杂度：O(n)
+
+public class Solution {
+    /**
+     * @param strs: the given array of strings
+     * @return: The anagrams which have been divided into groups
+     */
+    public List<List<String>> groupAnagrams(String[] strs) {
+        
+        List<List<String>> res = new ArrayList<>();
+        if (strs == null || strs.length == 0) {
+            return res;
+        }
+        
+        Map<String, List<String>> map = new HashMap<>();
+        
+        for (String str : strs) {
+            char[] ss = str.toCharArray();
+            Arrays.sort(ss);
+            String strKey = String.valueOf(ss);
+            if (map.containsKey(strKey)) {
+                map.get(strKey).add(str);
+            } else {
+                List<String> list = new ArrayList<>();
+                list.add(str);
+                map.put(strKey, list);
+            }
+        }
+        
+        for (List<String> list : map.values()) {
+            res.add(list);
+        }
+        
+        return res;
+    }
+}
