@@ -1,0 +1,54 @@
+思路：拓扑排序，需要两个map，一个维护邻居，一个维护入度
+
+时间复杂度：O(V + E) V - vertices, E - edges
+空间复杂度：O(V + E)
+
+public class Solution {
+    /*
+     * @param numCourses: a total of n courses
+     * @param prerequisites: a list of prerequisite pairs
+     * @return: true if can finish all courses or false
+     */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        Queue<Integer> queue = new LinkedList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        Map<Integer, List<Integer>> dependCourses = new HashMap<>();
+        int remian = numCourses;
+        
+        for (int i = 0; i < numCourses; i++) {
+            dependCourses.put(i, new ArrayList<>());
+        }
+        
+        for (int i = 0; i < prerequisites.length; i++) {
+            if (!map.containsKey(prerequisites[i][0])) {
+                map.put(prerequisites[i][0], 1);
+            } else {
+                map.put(prerequisites[i][0], map.get(prerequisites[i][0]) + 1);                
+            }
+            dependCourses.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+        
+        for (int i = 0; i < numCourses; i++) {
+            if (!map.containsKey(i)) {
+                queue.offer(i);
+            }
+        }
+        
+        while (!queue.isEmpty()) {
+            int curt = queue.poll();
+            remian--;
+            List<Integer> neighbors = dependCourses.get(curt);
+            for (int i = 0; i < neighbors.size(); i++) {
+                int neighbor = neighbors.get(i);
+                map.put(neighbor, map.get(neighbor) - 1);
+                if (map.get(neighbor) == 0) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+        
+        return remian == 0;
+        
+    }
+}
+
