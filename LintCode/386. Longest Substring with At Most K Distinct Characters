@@ -1,0 +1,77 @@
+思路：双指针，维护一个count数组，记录每中字符出现的次数，当从0变为1的时候，说明letter种类加一；从1变为0的时候，说明种类减一。
+     当刚好超过k的时候，比较一次res。双指针重点在于index与状态的统一，index变了之后，所有状态一定要变，否则就不要变index。
+   
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+右指针作为主指针：
+public class Solution {
+    /*
+     * @param s: A string
+     * @param k: An integer
+     * @return: An integer
+     */
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        // write your code here
+        int[] cnt = new int[256];
+        char[] sc = s.toCharArray();
+
+        int ans = 0;
+        int sum = 0;
+        for (int l = 0, r = 0; r < s.length(); r++) {
+            cnt[sc[r]]++;
+            if (cnt[sc[r]] == 1) {
+                sum++;
+            }
+            while (sum > k) {
+                cnt[sc[l]]--;
+                if (cnt[sc[l]] == 0) {
+                    sum--;
+                }
+                l++;
+            }
+            ans = Math.max(ans, r - l + 1);
+        }
+        return ans;
+    }
+}
+
+左指针作为主指针：
+public class Solution {
+    /**
+     * @param s: A string
+     * @param k: An integer
+     * @return: An integer
+     */
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int[] count = new int[256];
+        int numberOfLetter = 0;
+        char[] ss = s.toCharArray();
+        int res = 0;
+        int r = -1;
+        for (int l = 0; l < s.length(); l++) {
+            while (numberOfLetter <= k && r < ss.length) {
+                r++;
+                if (r < ss.length) {
+                    count[ss[r]]++;
+                    if (count[ss[r]] == 1) {
+                        numberOfLetter++;
+                    }
+                }
+
+            }
+            res = Math.max(res, r - l);
+            count[ss[l]]--;
+            if (count[ss[l]] == 0) {
+                numberOfLetter--;
+            }
+        }
+        return res;
+        
+    }
+}
