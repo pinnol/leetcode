@@ -1,0 +1,38 @@
+思路：先建立prefix sum数组。然后使用一个map，里面存储的是前缀和等于（某前缀和+k）的起始位置，如果遍历前缀和的过程中，遇到map里已经有这个值了，
+  说明这个值减k的前缀和也在前面出现过，那么用此时对应的index减去之前的index，就得到了一个长度。然后再与res比较。
+  
+  时间复杂度：O(n)
+  空间复杂度：O(n)
+
+
+public class Solution {
+    /**
+     * @param nums: an array
+     * @param k: a target value
+     * @return: the maximum length of a subarray that sums to k
+     */
+    public int maxSubArrayLen(int[] nums, int k) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        Map<Integer, Integer> map = new HashMap<>();
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        int res = 0;
+        
+        map.put(k, 0);
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+            if (map.containsKey(preSum[i])) {
+                res = Math.max(res, i - map.get(preSum[i]));
+            }
+            
+            if (!map.containsKey(preSum[i] + k)) {
+                map.put(preSum[i] + k, i);
+            }
+        }
+        
+        return res;
+    }
+}
