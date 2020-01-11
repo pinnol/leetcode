@@ -1,4 +1,5 @@
-思路：因为要k个一组来更新，所以无法避免先遍历k个，这样我们才能知道k个节点是否要更新。使用dummy存储head，然后使用
+思路：因为要k个一组来更新，所以无法避免先遍历k个，这样我们才能知道k个节点是否要更新。使用dummy存储head。每次返回更新后，k组节点的最后一个。
+       每次传入k组节点之前的最后一个节点。
 
 时间复杂度：O(n)
 空间复杂度：O(1)
@@ -38,6 +39,10 @@ public class Solution {
         return dummy.next;
     }
     
+    // head -> n1 -> n2 ... nk -> nk+1
+    // =>
+    // head -> nk -> nk-1 .. n1 -> nk+1
+    // return n1
     private ListNode reverseList(ListNode head, int k) {
         ListNode node = head;
         for (int i = 0; i < k; i++) {
