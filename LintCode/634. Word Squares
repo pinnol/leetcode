@@ -63,7 +63,24 @@ public class Solution {
 
         return ans;
     }
-
+    // 消除第二种冗余，但其实真正运行起来没有不消除跑的快
+    private boolean checkPrefix(int len, List<String> ansBuilder, Trie tr) {
+        int currIndex = ansBuilder.size() - 1;
+        StringBuilder prefixBuilder;
+        // i代表的是nextword之后的那些单词的index，正好这些单词的index与 它们的prefix在之前的单词中的位置相同
+        for (int i = currIndex + 1; i < len; i++) {
+            prefixBuilder = new StringBuilder();
+            for (int j = 0; j <= currIndex; j++) {
+                prefixBuilder.append(ansBuilder.get(j).charAt(i));
+            }
+            if (tr.findByPrefix(prefixBuilder.toString()).size() == 0) {
+                return false;
+            }
+            
+        }
+        return true;
+        
+    }
     private void search(int len, Trie tr, List<List<String>> ans,
             List<String> ansBuilder) {
         if (ansBuilder.size() == len) {
@@ -73,12 +90,15 @@ public class Solution {
 
         int idx = ansBuilder.size();
         StringBuilder prefixBuilder = new StringBuilder();
+
         for (String s : ansBuilder)
             prefixBuilder.append(s.charAt(idx));
         List<String> startWith = tr.findByPrefix(prefixBuilder.toString());
         for (String sw : startWith) {
             ansBuilder.add(sw);
-            search(len, tr, ans, ansBuilder);
+            if (checkPrefix(len, ansBuilder, tr)) {
+                search(len, tr, ans, ansBuilder);
+            }
             ansBuilder.remove(ansBuilder.size() - 1);
         }
     }
