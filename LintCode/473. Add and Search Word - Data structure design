@@ -1,0 +1,81 @@
+思路：使用trie，注意建立trie有两步，第一是定义TrieNode - isWord, sons, 
+    第二是定义Trie - root, methods，注意root什么单词都不是，只是一个开始。从第一代子节点才开始表示单词。
+    
+时间复杂度：
+空间复杂度：
+
+public class WordDictionary {
+    /*
+     * @param word: Adds a word into the data structure.
+     * @return: nothing
+     */
+    class TrieNode {
+        boolean isWord;
+        TrieNode[] sons;
+        public TrieNode() {
+            this.sons = new TrieNode[26];
+        }
+    }
+    
+    class Trie {
+        TrieNode root;
+        public Trie() {
+            this.root = new TrieNode();
+        }
+    }
+    
+    Trie trie = new Trie();
+    
+    public void addWord(String word) {
+        addWord(word, 0, trie.root);
+    }
+    
+    private void addWord(String word, int index, TrieNode root) {
+        if (word.length() == index) {
+            root.isWord = true;
+            return;
+        }
+        
+        char ch = word.charAt(index);
+        if (root.sons[ch - 'a'] != null) {
+            addWord(word, index + 1, root.sons[ch - 'a']);
+        } else {
+            root.sons[ch - 'a'] = new TrieNode();
+            addWord(word, index + 1, root.sons[ch - 'a']);
+        }
+    }
+    
+    
+
+    /*
+     * @param word: A word could contain the dot character '.' to represent any one letter.
+     * @return: if the word is in the data structure.
+     */
+    public boolean search(String word) {
+        return search(word, 0, trie.root);
+    }
+    
+    private boolean search(String word, int index, TrieNode root) {
+        if (index == word.length()) {
+            return root.isWord;
+        }
+        
+        char ch = word.charAt(index);
+        if (ch == '.') {
+            for (int i = 0; i < 26; i++) {
+                if (root.sons[i] != null) {
+                    if (search(word, index + 1, root.sons[i])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        if (root.sons[ch - 'a'] != null) {
+            return search(word, index + 1, root.sons[ch - 'a']);
+        }
+        
+        return false;
+    }
+}
