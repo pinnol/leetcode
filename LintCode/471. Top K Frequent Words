@@ -1,0 +1,76 @@
+思路：先用一个map统计所有单词的频率，再使用heap来找到k个频率最高的单词，注意这里有一个trick，就是我们先建立最小堆，
+     空间维持在k，当超过k的时候，就把最小的poll出来，因为我们之前已经用map统计好所有单词的频率了，所以被poll出去以后，
+     该单词的频率也不会再增加。然后遍历完所有单词以后，我们poll出k个结果，反序插入到res数组中。
+     
+时间复杂度：O(nlogk)
+空间复杂度：O(n)
+
+
+class Pair {
+    String key;
+    int value;
+    
+    Pair(String key, int value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+
+public class Solution {
+    /**
+     * @param words an array of string
+     * @param k an integer
+     * @return an array of string
+     */
+     
+    private Comparator<Pair> pairComparator = new Comparator<Pair>() {
+        public int compare(Pair left, Pair right) {
+            if (left.value != right.value) {
+                return left.value - right.value;
+            }
+            return right.key.compareTo(left.key);
+        }
+    };
+    
+    public String[] topKFrequentWords(String[] words, int k) {
+        if (k == 0) {
+            return new String[0];
+        }
+        
+        HashMap<String, Integer> counter = new HashMap<>();
+        for (String word : words) {
+            if (counter.containsKey(word)) {
+                counter.put(word, counter.get(word) + 1);
+            } else {
+                counter.put(word, 1);
+            }
+        }
+        
+        PriorityQueue<Pair> Q = new PriorityQueue<Pair>(k, pairComparator);
+        for (String word : counter.keySet()) {
+            Pair peak = Q.peek();
+            Pair newPair = new Pair(word, counter.get(word));
+            if (Q.size() < k) {
+                Q.add(newPair);
+            } else if (pairComparator.compare(newPair, peak) > 0) {
+                Q.poll();
+                Q.add(newPair);
+            }
+        }
+        
+        String[] result = new String[k];
+        int index = 0;
+        while (!Q.isEmpty()) {
+            result[index++] = Q.poll().key;
+        }
+        
+        // reverse
+        for (int i = 0; i < index / 2; i++) {
+            String temp = result[i];
+            result[i] = result[index - i - 1];
+            result[index - i - 1] = temp;
+        }
+        
+        return result;
+     }
+}
