@@ -1,5 +1,11 @@
-// 因为多个用户可能用同一个名字，但是其实是不同的用户，所以我们需要用id指代不同的用户。
-// 使用set去除重复email
+思路：使用union-find， create a father array, which contains the father of each account name, and then solve the problem in two
+steps. First, connect the account names based on their common emails. Second, map the emails to the same id when they belongs to
+a same person. 
+
+Time Complexity: O(AlogA), where A = sum(ai), where ai is the length of accounts[i]. If we used union-by-rank, 
+    this complexity improves to O(A \alpha(A)) \approx O(A)O(Aα(A))≈O(A), where \alphaα is the Inverse-Ackermann function.
+Space Complexity: O(A), the space used by our DSU structure.
+
 public class Solution {
     /**
      * @param accounts: List[List[str]]
@@ -12,12 +18,13 @@ public class Solution {
         }
         
         Map<Integer, Integer> father = new HashMap<>();
+        // 使用id代替用户名
         for (int i = 0; i < accounts.size(); i++) {
             father.put(i, i);
         }
         
         Map<String, List<Integer>> emailToIds = getEmailToIds(accounts);
-        
+        // 将每个独立的用户名归纳到同一个人名下
         for (String email : emailToIds.keySet()) {
             List<Integer> Ids = emailToIds.get(email);
             for (int i = 1; i < Ids.size(); i++) {
@@ -31,13 +38,14 @@ public class Solution {
         for (Integer id : idToEmails.keySet()) {
             List<String> emailList = new ArrayList<>(idToEmails.get(id));
             Collections.sort(emailList);
+            // 在每组email的开始加入用户名
             emailList.add(0, accounts.get(id).get(0));
             result.add(emailList);
         }
         return result;
     }
     
-    
+    // 使用id代替每个用户名，建立email - (id1, id2, ...)的map
     public Map<String, List<Integer>> getEmailToIds(List<List<String>> accounts) {
         Map<String, List<Integer>> emailToIds = new HashMap<>();
         for (int i = 0; i < accounts.size(); i++) {
@@ -50,7 +58,7 @@ public class Solution {
         }
         return emailToIds;
     }
-    
+    // make the emails belong to the corresponding person
     public Map<Integer, Set<String>> getIdToEmails(Map<Integer, Integer> father, List<List<String>> accounts) {
         Map<Integer, Set<String>> idToEmails = new HashMap<>();
         for (int i = 0; i < accounts.size(); i++) {
