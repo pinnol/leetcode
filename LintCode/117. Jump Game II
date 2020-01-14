@@ -1,0 +1,53 @@
+思路：动态规划或者贪心
+
+// 动态规划
+// dp[i]记录走到i所需要的最小步数，转移方程是dp[pos+jump] = min(dp[pos]+1, dp[pos+jump]) jump小于等于dp[pos]所能走的最大值
+
+时间复杂度：O(nk) where k is the largest step
+空间复杂度：O(n)
+
+class Solution {
+    public int jump(int[] nums) {
+        int[] dp = new int[nums.length];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+
+        for (int pos = 0; pos < nums.length-1; pos++) {
+            for (int jump = 1; jump <= nums[pos]; jump++) {
+                if (pos+jump >= nums.length) break;
+                if (dp[pos+jump] > dp[pos]+1)
+                    dp[pos+jump] = dp[pos]+1;
+            }
+        }
+        return dp[nums.length-1];
+    }
+}
+
+// 贪心
+// 找到每一步所能走的最远位置。
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+public class Solution {
+    public int jump(int[] A) {
+        if (A == null || A.length == 0) {
+            return -1;
+        }
+        int start = 0, end = 0, jumps = 0;
+        // end >= A.length - 1时跳出循环。
+        while (end < A.length - 1) {
+            jumps++;
+            int farthest = end;
+            for (int i = start; i <= end; i++) {
+                if (A[i] + i > farthest) {
+                    farthest = A[i] + i;
+                }
+            }
+            // 因为end之前包括end的所有位置可以走的距离都试过了，所以下一次要从end + 1开始试
+            start = end + 1;
+            end = farthest;
+        }
+        return jumps;
+    }
+}
