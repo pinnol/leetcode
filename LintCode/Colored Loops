@@ -63,6 +63,8 @@ class NT10 {
     private boolean isValid(int nx, int ny, int x, int y, int prevX, int prevY, char[][] graph) {
         int n = graph.length;
         int m = graph[0].length;
+        // graph[nx][ny] == graph[x][y]判断是否字母相同
+        // (nx != prevX || ny != prevY)判断是否重复走，注意是或条件
         return nx >= 0 && nx < n && ny >= 0 && ny < m && graph[nx][ny] == graph[x][y] && (nx != prevX || ny != prevY);
     }
 }
