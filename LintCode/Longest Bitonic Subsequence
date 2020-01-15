@@ -1,0 +1,63 @@
+Given an array arr[0 … n-1] containing n positive integers, a subsequence of arr[] is called Bitonic 
+if it is first increasing, then decreasing. Write a function that takes an array as argument and returns 
+the length of the longest bitonic subsequence.
+A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. 
+Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty.
+
+
+思路1：与Longest subsequence相似，创建两个数组，一个存储结束于arr[i]的上升序列的最长长度LIS，一个存储开始于arr[i]的下降序列的最长长度LDS。
+      结果就是max(LIS[i] + LDS[i] - 1)
+
+
+时间复杂度：O(n^2)
+空间复杂度：O(n)
+
+
+class Solution {
+    public static void main(String[] args) {
+        Solution ss = Solution NT8();
+        int[] arr = {1, 17, 3, 12, 5, 6, 2};
+        int res = ss.longestBitonic(arr);
+        System.out.println(res);
+    }
+
+    private int longestBitonic(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            return 0;
+        }
+        int n = arr.length;
+        int[] lis = new int[n];
+        int[] lds = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            lis[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (arr[j] < arr[i]) {
+                    lis[i] = Math.max(lis[i], lis[j] + 1) ;
+                }
+            }
+        }
+
+        for (int i = n - 1; i >= 0; i--) {
+            lds[i] = 1;
+            for (int j = n - 1; j > i; j--) {
+                if (arr[j] < arr[i]) {
+                    lds[i] = Math.max(lds[i], lds[j] + 1);
+                }
+            }
+        }
+
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, lis[i] + lds[i] - 1);
+        }
+
+        return n - res;
+    }
+}
+
+思路2：
+
+
+Time Complexity: O(nLogn)
+Auxiliary Space: O(n)
