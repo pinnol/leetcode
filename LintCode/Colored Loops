@@ -1,0 +1,68 @@
+思路：使用dfs，每次传入来时的位置，避免偶组重复路径，此外，还要判断路径上的字母是否相同。当再一次访问到visited的时候，说明找到了loop。
+
+时间复杂度: O(mn)
+空间复杂度: O(mn)
+
+class NT10 {
+    public static void main(String[] args) {
+        NT10 nn = new NT10();
+        char[][] graph = new char[][]{{'A', 'A', 'A', 'A', 'A', 'A'}, {'A','B','C','B','C','A'}, {'A', 'B', 'A', 'E','C', 'A'}, {'A', 'B', 'A', 'A','C', 'A'},{'A','B','C','B','C','A'}, {'A', 'A', 'A', 'D', 'A', 'A'}};
+        nn.hasLoop(graph);
+    }
+
+    private void hasLoop(char[][] graph) {
+        int n = graph.length;
+        int m = graph[0].length;
+        boolean[][] visited = new boolean[n][m];
+        boolean loop = false;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!visited[i][j]) {
+                    loop = dfs(i, j, visited, graph, -1, -1);
+                    if (loop == true) {
+                        break;
+                    }
+                }
+            }
+            if (loop == true) {
+                break;
+            }
+        }
+
+        if (loop == true) {
+            System.out.println("Yes");
+        } else {
+            System.out.println("No");
+        }
+
+    }
+
+    int[] dx = new int[]{-1, 0, 1, 0};
+    int[] dy = new int[]{0, 1, 0, -1};
+
+    private boolean dfs(int x, int y, boolean[][] visited, char[][] graph, int prevX, int prevY) {
+        if (visited[x][y]) {
+            return true;
+        }
+        visited[x][y] = true;
+        boolean loop = false;
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (isValid(nx, ny, x, y, prevX, prevY, graph)) {
+                loop = dfs(nx, ny, visited, graph, x, y);
+            }
+            if (loop == true) {
+                return loop;
+            }
+        }
+        return loop;
+
+    }
+
+    private boolean isValid(int nx, int ny, int x, int y, int prevX, int prevY, char[][] graph) {
+        int n = graph.length;
+        int m = graph[0].length;
+        return nx >= 0 && nx < n && ny >= 0 && ny < m && graph[nx][ny] == graph[x][y] && (nx != prevX || ny != prevY);
+    }
+}
