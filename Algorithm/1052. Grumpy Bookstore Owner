@@ -1,0 +1,21 @@
+https://leetcode.com/problems/grumpy-bookstore-owner/discuss/299230/JavaPython-3-Sliding-window.
+思路：使用sliding window，用win记录使用trick后可以增加的satisfied的顾客数量，satisfied记录本来就会被满足的顾客数量。遍历后取最大的增加量加入到
+      satisfied中。
+   
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+class Solution {
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+         int satisfied = 0, maxMakeSatisfied = 0;
+        for (int i = 0, win = 0; i < grumpy.length; ++i) {
+            if (grumpy[i] == 0) { satisfied += customers[i]; }
+            else { win += customers[i]; }
+            if (i >= X) { // window's size > X.
+                win -= grumpy[i - X] * customers[i - X]; // to maintain the size as X, remove unsastified customers from left end of the window.
+            }
+            maxMakeSatisfied = Math.max(win, maxMakeSatisfied);
+        }
+        return satisfied + maxMakeSatisfied;
+    }
+}
