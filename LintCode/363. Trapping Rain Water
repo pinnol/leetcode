@@ -1,0 +1,40 @@
+思路1：two pointer，左右指针比较，此时较低height的木板可以作为木桶的一个水位，因为另一块木板比它高。然后用水位减去移动后的高度，如果低于水位，
+      就增加到res上，如果高于，则更新木板高度。重复这个过程。
+      
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+//Version 0: Two pointer
+public class Solution {
+    /**
+     * @param heights: an array of integers
+     * @return: a integer
+     */
+    public int trapRainWater(int[] heights) {
+        // write your code here
+        int left = 0, right = heights.length - 1; 
+        int res = 0;
+        if(left >= right)
+            return res;
+        int leftheight = heights[left];
+        int rightheight = heights[right];
+        while(left < right) {
+            if(leftheight < rightheight) {
+                left ++;
+                if(leftheight > heights[left]) {
+                    res += (leftheight - heights[left]);
+                } else {
+                    leftheight = heights[left];
+                }
+            } else {
+                right --;
+                if(rightheight > heights[right]) {
+                    res += (rightheight - heights[right]);
+                } else {
+                    rightheight = heights[right];
+                }
+            }
+        }
+        return res;
+    }
+}      
