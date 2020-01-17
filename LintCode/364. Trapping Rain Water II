@@ -1,0 +1,108 @@
+思路：
+
+• 一个格子高度h，它上面能盛多少水
+
+– 检查所有从这个格子到边界的路径，每条路径l都有最大高度值M
+
+– 所有路径最小的M值就是这个格子的吃水线，吃水线-h=盛水量
+
+• 用最小堆维护访问的点，先访问边界一圈的点
+
+• 每次从最小堆顶拿出点P，向其周围4个方向上看未曾访问过的点，如Q
+
+– 如果Q的高度<=P的吃水线，说明Q的吃水线就是P的吃水线！因为Q是第一次被访问到。如果我们把整个图看成一个木桶，那么Q的最低木板一定是P对应的木板，
+  因为Q的其他相连处的cell对应的吃水线一定大于等于P的吃水线。
+  如，A的吃水线一定大于等于P，只有星号内部有高于星号的cell，整体吃水线才会有变化，这时P的吃水线依然是最小的。
+  我们找的是最大高度中的最小值。
+* * * * * * *
+*           *
+*           *
+*           *
+*   B       *
+* C Q A     *
+* * P * * * *
+
+– 如果Q的高度>P的吃水线，则说明它不能装水，Q的吃水线就是自身的高度
+
+– 将(Q, Q的吃水线)加入Heap中
+
+
+What determines the amount of water can a bar can hold? It is the min height of the max heights along all paths to the boundary
+
+时间复杂度：O(mnlog(mn))
+空间复杂度：O(mn)
+
+
+class Cell {
+    public int x, y, height;
+    Cell() {}
+    Cell(int x, int y, int height) {
+        this.x = x;
+        this.y = y;
+        this.height = height;
+    }
+}
+
+class CellComparator implements Comparator<Cell> {
+    @Override
+    public int compare(Cell left, Cell right) {
+        return left.height - right.height;
+    }
+}
+
+public class Solution {
+    int[] dx = {1, -1, 0, 0};
+    int[] dy = {0, 0, 1, -1};
+    
+    public int trapRainWater(int[][] heights) {
+        if (heights == null || heights.length == 0) {
+            return 0;
+        }
+    
+        PriorityQueue<Cell> minheap =  new PriorityQueue<>(new CellComparator());
+        
+        int n = heights.length;
+        int m = heights[0].length;
+        boolean[][] visited = new boolean[n][m];
+        
+        for (int i = 0; i < n; i++) {
+            minheap.offer(new Cell(i, 0, heights[i][0]));
+            minheap.offer(new Cell(i, m - 1, heights[i][m-1]));
+            visited[i][0] = true;
+            visited[i][m - 1] = true;
+        }
+        
+        for (int i = 0; i < m; i++) {
+            minheap.offer(new Cell(0, i, heights[0][i]));
+            minheap.offer(new Cell(n-1, i, heights[n-1][i]));
+            visited[0][i] = true;
+            visited[n - 1][i] = true;
+        }
+
+        int water = 0;
+        while (!minheap.isEmpty()) {
+            Cell cell = minheap.poll();
+            
+            for (int i = 0; i < 4; i++) {
+                int nx = cell.x + dx[i];
+                int ny = cell.y + dy[i];
+                
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
+                    continue;
+                }
+                if (visited[nx][ny]) {
+                    continue;
+                }
+                
+                visited[nx][ny] = true;
+                minheap.offer(new Cell(nx, ny, Math.max(cell.height, heights[nx][ny])));
+                water = water + Math.max(0, cell.height - heights[nx][ny]);
+            }
+        }
+        
+        return water;
+    } 
+}
+
+
+
