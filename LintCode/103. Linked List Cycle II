@@ -1,0 +1,45 @@
+思路：使用双指针，快的走两步，慢的走一步，当他们第一次相遇时，将一个指针移动到head，另一个走到相遇位置的下一个，等他们第二次相遇时，就是环的入口。
+     
+     通过数学可证明，假设环上入口距离链表头距离为a，环的长度为l，两指针第一次相遇处距离环入口为b，则另一段环的长度为c=l-b，
+     由于快指针走过的距离是慢指针的两倍，则有a+nl+b=2*(a+b),又有l=b+c，可得nl=a+b，等于说从b再走a的距离就是入口。
+     需要注意的是我们如何看待这个公式里的长度，实际上，我们应该认为在head位置的指针已经走了一个步长。即假设每个节点是等间隔的，两个节点的初始位置
+     是head之前的一个虚拟节点，这就解释了为什么一开始slow=head, fast=head.next，并且第一次相遇后一个指针到了head，另一个是相遇位置的next。
+     
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+
+/**
+ * Definition for ListNode.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int val) {
+ *         this.val = val;
+ *         this.next = null;
+ *     }
+ * }
+ */ 
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next==null) {
+            return null;
+        }
+
+        ListNode fast, slow;
+        fast = head.next;    		//快指针
+        slow = head;				//慢指针
+        while (fast != slow) {		//快慢指针相遇
+            if(fast==null || fast.next==null)
+                return null;
+            fast = fast.next.next;
+            slow = slow.next;
+        } 
+        
+        while (head != slow.next) {  //同时移动head和慢指针
+            head = head.next;
+            slow = slow.next;
+        }
+        return head;				//两指针相遇处即为环的入口
+    }
+}
