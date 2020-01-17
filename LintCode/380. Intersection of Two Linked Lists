@@ -1,0 +1,57 @@
+思路：双指针，找到链表A的尾与B的头连接，然后找环的入口。
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+
+public class Solution {
+    /**
+     * @param headA: the first list
+     * @param headB: the second list
+     * @return: a ListNode
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) {
+            return null;
+        }
+        
+        ListNode head = headA;
+        while (headA.next != null) {
+            headA = headA.next;
+        }
+        
+        headA.next = headB;
+        ListNode node = findCycleEntry(head);
+        return node;
+    }
+    
+    private ListNode findCycleEntry(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        
+        ListNode fast = head.next;
+        ListNode slow = head;
+        
+        while (fast != slow) {
+            if (fast == null || fast.next == null) {
+                return null;
+            }
+            
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        
+        slow = head;
+        fast = fast.next;
+        
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        
+        return fast;
+        
+        
+    }
+}
