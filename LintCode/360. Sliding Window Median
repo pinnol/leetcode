@@ -68,61 +68,80 @@ public class Solution {
 时间复杂度：O(nlog(k))
 空间复杂度：O(k)
 
-import java.util.*;
-
-
 public class Solution {
     /**
-	 * @param nums
-	 *            : A list of integers.
-	 * @return: The median of the element inside the window at each moving.
-	 */
-	public  ArrayList<Integer> medianSlidingWindow(int[] nums, int k) {
-	    int n = nums.length;
-        TreeSet<Node> minheap = new TreeSet<Node>();
-        TreeSet<Node> maxheap = new TreeSet<Node>();
-        ArrayList<Integer> result = new ArrayList<Integer> ();
+     * @param nums: A list of integers
+     * @param k: An integer
+     * @return: The median of the element inside the window at each moving
+     */
+    TreeSet<Node> minHeap;
+    TreeSet<Node> maxHeap;
+    public List<Integer> medianSlidingWindow(int[] nums, int k) {
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return res;
+        }
         
-        if (k == 0)
-            return result;
+        minHeap = new TreeSet<>();
+        maxHeap = new TreeSet<>();
         
-        int half = (k+1)/2;
-        for(int i=0; i<k-1; i++) {
-            add(minheap, maxheap, half, new Node(i, nums[i]));
-        }
-        for(int i=k-1; i<n; i++) {
-            add(minheap, maxheap, half, new Node(i, nums[i]));
-            result.add(minheap.last().val);
-            remove(minheap,maxheap, new Node(i-k+1, nums[i-k+1]));
-        }
-        return result;
-    }
-    
-    void add(TreeSet<Node>minheap, TreeSet<Node> maxheap, int size, Node node) {
-        if (minheap.size()<size) {
-            minheap.add(node);
-        }
-        else {
-            maxheap.add(node);
-        }
-        if (minheap.size()==size) {
-            if (maxheap.size()>0 && minheap.last().val>maxheap.first().val) {
-                Node s = minheap.last();
-                Node b = maxheap.first();
-                minheap.remove(s);
-                maxheap.remove(b);
-                minheap.add(b);
-                maxheap.add(s);
+        for (int i = 0; i < nums.length; i++) {
+            add(minHeap, maxHeap, nums[i], i);
+            balance();
+            if (i >= k) {
+                remove(minHeap, maxHeap, nums[i - k], i - k);
+                balance();
             }
+            if (i >= k - 1) {
+                res.add(maxHeap.last().val);    
+            }
+            
+        }
+        return res;
+        
+    }
+    
+    private void remove(TreeSet<Node> minHeap, TreeSet<Node> maxHeap, int num, int id) {
+        Node node = new Node(id, num);
+        if (minHeap.contains(node)) {
+            minHeap.remove(node);
+        } else {
+            maxHeap.remove(node);
         }
     }
     
-    void remove(TreeSet<Node>minheap, TreeSet<Node> maxheap, Node node) {
-        if (minheap.contains(node)) {
-            minheap.remove(node);
+    private void add(TreeSet<Node> minHeap, TreeSet<Node> maxHeap, int num, int id) {
+        if (maxHeap.size() == 0 || maxHeap.last().val >= num) {
+            maxHeap.add(new Node(id, num));
+        } else {
+            minHeap.add(new Node(id, num));
         }
-        else {
-            maxheap.remove(node);
+        
+    }
+    
+    private void balance() {
+        while (maxHeap.size() - 1 > minHeap.size()) {
+            minHeap.add(maxHeap.pollLast());
+        }
+        
+        while (minHeap.size() > maxHeap.size()) {
+            maxHeap.add(minHeap.pollFirst());
+        }
+    }
+    
+    class Node implements Comparable<Node>{
+        int id;
+        int val;
+        public Node(int id, int val) {
+            this.id = id;
+            this.val = val;
+        }
+        
+        public int compareTo(Node b) {
+            if (this.val == b.val) {
+                return this.id - b.id;
+            }
+            return this.val - b.val;
         }
     }
 }
