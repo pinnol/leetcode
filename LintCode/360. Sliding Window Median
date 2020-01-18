@@ -1,5 +1,7 @@
 思路1：使用两个heap，与Find Median from Data Stream思路相似，区别在于需要把window过的num从堆中删除，这个操作是O(n)的，
-      因为堆最大为k，所以总体时间复杂度是O(nk)
+      因为堆最大为k，所以总体时间复杂度是O(nk)。
+      
+      注意balance，插入后需要balance，删除后也需要balance。因为删除的有可能在maxHeap中。
       
 时间复杂度：O(nk)
 空间复杂度：O(k)
