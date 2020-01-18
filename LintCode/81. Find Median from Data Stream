@@ -1,0 +1,46 @@
+思路：使用两个堆，最大堆保存数组前一半的数，最小堆保存数组后一半的数。遍历数组，每次比较当前数字是否小于等于最大堆的peek，如果是就加入maxheap，
+     否则进入最小堆。之后balance，保证最最小堆的大小永远小于最大堆或者最大堆加一。最大堆的peek就是median。
+     
+时间复杂度：O(nlogn)
+空间复杂度：O(n)
+
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @return: the median of numbers
+     */
+    Queue<Integer> maxHeap;
+    Queue<Integer> minHeap;
+    public int[] medianII(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return new int[0];
+        }
+        
+        int[] res = new int[nums.length];
+        
+        maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        minHeap = new PriorityQueue<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            if (maxHeap.isEmpty() || nums[i] <= maxHeap.peek()) {
+                maxHeap.offer(nums[i]);
+            } else {
+                minHeap.offer(nums[i]);
+            }
+            balance();
+            res[i] = maxHeap.peek();
+        }
+        return res;
+        
+    }
+    
+    private void balance() {
+        while (minHeap.size() < maxHeap.size() - 1) {
+            minHeap.offer(maxHeap.poll());
+        }
+        
+        while (minHeap.size() > maxHeap.size()) {
+            maxHeap.offer(minHeap.poll());
+        }
+    }
+}
