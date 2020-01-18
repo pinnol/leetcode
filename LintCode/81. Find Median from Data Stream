@@ -1,7 +1,7 @@
 思路：使用两个堆，最大堆保存数组前一半的数，最小堆保存数组后一半的数。遍历数组，每次比较当前数字是否小于等于最大堆的peek，如果是就加入maxheap，
      否则进入最小堆。之后balance，保证最最小堆的大小永远小于最大堆或者最大堆加一。最大堆的peek就是median。
      
-时间复杂度：O(nlogn)
+时间复杂度：O(nlogn) 每次插入堆中logn，balance也是logn，一共n次。
 空间复杂度：O(n)
 
 public class Solution {
