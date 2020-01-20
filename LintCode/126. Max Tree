@@ -1,0 +1,33 @@
+思路：单调递减栈，找到每个数左右第一个比它大的数。因为每个点的父节点一定是min{左边第一个比它大的值L，右边第一个比它大的值R}、
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+
+public class Solution {
+    /**
+     * @param A: Given an integer array with no duplicates.
+     * @return: The root of max tree.
+     */
+    public TreeNode maxTree(int[] A) {
+        Stack<TreeNode> stack = new Stack<>();
+        for (int i = 0; i <= A.length; i++) {
+            // 使用Integer.MAX_VALUE找到根节点
+            TreeNode curr = i == A.length? new TreeNode(Integer.MAX_VALUE) : new TreeNode(A[i]);
+            while (!stack.isEmpty() && curr.val > stack.peek().val) {
+                TreeNode right = stack.pop(); // 遇到比自己小的就pop出去
+                if (stack.isEmpty()) {
+                    curr.left = right; // stack为空说明父节点只有curr这一个选项
+                } else {
+                    if (stack.peek().val > curr.val) {
+                        curr.left = right; // curr比stack的peek小，说明curr是父节点，因为每个点的父节点一定是min{左边第一个比它大的值L，右边第一个比它大的值R}、
+                    } else {
+                        stack.peek().right = right;   // curr比stack的peek大，说明peek是父节点
+                    }
+                }
+            }
+            stack.push(curr);
+        }
+        return stack.pop().left;
+    }
+}
