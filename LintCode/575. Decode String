@@ -1,3 +1,19 @@
+思路：
+
+数字和字符都push
+
+– 见到“[”push当前数字入栈
+
+– 字符直接压栈
+
+• 见到“]”就pop字符直到碰到数字A
+
+– 这些字符组成的字符串重复A次
+
+时间复杂度：O(n)
+空间复杂度：O(n)
+
+
 public class Solution {
     /**
      * @param s: an expression includes numbers, letters and brackets
