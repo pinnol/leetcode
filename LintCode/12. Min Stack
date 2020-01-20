@@ -1,0 +1,48 @@
+思路：使用一个minStack同步存储每个值对应的stack最小值，
+
+    push 直接把元素压入 stack, 对于 minStack, 如果它为空则直接压入, 反之压入当前元素与 minStack 栈顶的最小值
+    pop 两个栈都弹出一个元素, 返回 stack 弹出的元素
+    min 返回 minStack 的栈顶
+
+时间复杂度：O(1)
+空间复杂度：O(n)
+
+
+public class MinStack {
+    Stack<Integer> stack;
+    Stack<Integer> minStack;
+    public MinStack() {
+        stack = new Stack<>();
+        minStack = new Stack<>();
+    }
+
+    /*
+     * @param number: An integer
+     * @return: nothing
+     */
+    public void push(int number) {
+        stack.push(number);
+        if (!minStack.isEmpty()) {
+            minStack.push(Math.min(minStack.peek(), number));
+        } else {
+            minStack.push(number);
+        }
+        
+    }
+
+    /*
+     * @return: An integer
+     */
+    public int pop() {
+        minStack.pop();
+        return stack.pop();
+    }
+
+    /*
+     * @return: An integer
+     */
+    public int min() {
+        // write your code here
+        return minStack.peek();
+    }
+}
