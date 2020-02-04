@@ -12,7 +12,8 @@ core object：elevator button我感觉可加可不加。只是实现了一个创
     不能在open中更新状态。
     handleExternalRequest可以改电梯运行状态，handleInternalRequest不能改电梯状态。其实我觉得internal的时候也可以设计为改状态，不然有的人等
     电梯关上再按就永远不动了。
-    
+    currLevel是0基的。
+    注意open的下降时的取模运算。
 
 enum Direction {
     UP, DOWN
@@ -165,7 +166,7 @@ public class Elevator {
 		else if(status == Status.DOWN)
 		{
 			for(int i = 0; i < downStops.size(); i++)
-			{
+			{	// 注意下降时的取模运算
 				int checkLevel = (currLevel + downStops.size() - i) % downStops.size();
 				if(downStops.get(checkLevel))
 				{
