@@ -15,6 +15,7 @@ core Object: ParkingLot
              Row
              Spot
              Vehicle
+使用了ticket存储每个车停在了哪。
 
 注意：找availableCount时，由于我们只需要每层level有多少空位，所以只需要在level设置成员变量就好。这是因为我们把大部分类的成员变量设置为了private，
      想更新的时候又要写个函数，比较麻烦。
@@ -23,7 +24,10 @@ core Object: ParkingLot
      我尝试在spot里面，根据当前spot的种类和车的种类来判断能不能停车，但是这样就需要spot知道所有的车的种类，耦合太高。接着我又把check放到了vehicle里，
      只需要每种车了解自己能停在哪种spot里，但其实依然不好。
 
-
+     从属类的成员变量中是否需要包含上级类。
+     
+     面试的时候最好不写太多代码，能省一个类就省一个类LOL.
+     
 // enum type for Vehicle
 enum VehicleSize {
     Motorcycle,
