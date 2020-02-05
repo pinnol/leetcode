@@ -1,0 +1,299 @@
+Design a parking lot.
+
+see CC150 OO Design for details.
+
+· n levels, each level has m rows of spots and each row has k spots.So each level has m x k spots.
+· The parking lot can park motorcycles, cars and buses
+· The parking lot has motorcycle spots, compact spots, and large spots
+· Each row, motorcycle spots id is in range [0,k/4)(0 is included, k/4 is not included), compact spots id is in range [k/4,k/4*3)(k/4*3 is not included) and large spots id is in range [k/4*3,k)(k is not included).
+· A motorcycle can park in any spot
+· A car park in single compact spot or large spot
+· A bus can park in five large spots that are consecutive and within same row. it can not park in small spots
+
+core Object: ParkingLot 
+             Level
+             Row
+             Spot
+             Vehicle
+
+注意：找availableCount时，由于我们只需要每层level有多少空位，所以只需要在level设置成员变量就好。这是因为我们把大部分类的成员变量设置为了private，
+     想更新的时候又要写个函数，比较麻烦。
+     
+     对于每个spot是否可以fit vehicle，我一开始是想写一个factory来建造ruleChecker，判断每个位置是否能停某种车，但是代码是在太多，懒得写了。于是
+     我尝试在spot里面，根据当前spot的种类和车的种类来判断能不能停车，但是这样就需要spot知道所有的车的种类，耦合太高。接着我又把check放到了vehicle里，
+     只需要每种车了解自己能停在哪种spot里，但其实依然不好。
+
+
+// enum type for Vehicle
+enum VehicleSize {
+    Motorcycle,
+    Compact,
+    Large,
+}
+
+abstract class Vehicle {
+    // Write your code here
+    protected VehicleSize size;
+    protected int spotsNeeded;
+    
+    public VehicleSize getSize() {
+        return size;
+    }
+    
+    public int getSpotsNeeded() {
+        return spotsNeeded;
+    }
+    
+    public abstract boolean canFitInSpot(Spot spot);
+    
+}
+
+class Motorcycle extends Vehicle {
+    // Write your code here
+    public Motorcycle() {
+        this.spotsNeeded = 1;
+        this.size = VehicleSize.Motorcycle;
+    }
+    
+    public boolean canFitInSpot(Spot spot) {
+        return true;
+    }
+    
+}
+
+class Car extends Vehicle {
+    // Write your code here
+    public Car() {
+        this.spotsNeeded = 1;
+        this.size = VehicleSize.Compact;
+    }
+    
+    public boolean canFitInSpot(Spot spot) {
+        return spot.getType() == VehicleSize.Compact || spot.getType() == VehicleSize.Large;
+    }
+}
+
+class Bus extends Vehicle {
+    // Write your code here
+    public Bus() {
+        this.spotsNeeded = 5;
+        this.size = VehicleSize.Large;
+    }
+    
+    public boolean canFitInSpot(Spot spot) {
+        return spot.getType() == VehicleSize.Large;
+    }
+}
+
+/* Represents a level in a parking garage */
+class Level {
+    // Write your code here
+    private int floor;
+    private List<Row> rows;
+    private int spotsPerRow;
+    private int availableNum;
+    
+    public Level(int floor, int numRow, int spotsPerRow) {
+        this.floor = floor;
+        rows = new ArrayList<>();
+        for (int i = 0; i < numRow; i++) {
+            rows.add(new Row(this, spotsPerRow));
+        }
+        availableNum = numRow * spotsPerRow;
+    }
+    
+    public void updateAvailableNumber(int diff) {
+        availableNum += diff;
+    }
+    
+    public List<Spot> findParkingSpots(Vehicle vehicle) {
+        for (int i = 0; i < rows.size(); i++) {
+            List<Spot> spots = rows.get(i).findParkingSpots(vehicle);
+            if (spots != null) {
+                return spots;
+            }
+        }
+        return null;
+    }
+    // public int getAvailableNumber() {
+    //     int count = 0;
+    //     for (int i = 0; i < numRow; i++) {
+    //         count += rows.get(i).getAvailableNumber();
+    //     }
+    //     return count;
+    // }
+    
+}
+
+class Row {
+    private List<Spot> spots;
+    private Level level;
+    
+    public Row(Level level, int spotsPerRow) {
+        spots = new ArrayList<>();
+        for (int i = 0; i < spotsPerRow; i++) {
+            if (i < spotsPerRow / 4) {
+                spots.add(new Spot(i, VehicleSize.Motorcycle, this, level));
+            } else if (i >= spotsPerRow / 4 && i < spotsPerRow / 4 * 3) {
+                spots.add(new Spot(i, VehicleSize.Compact, this, level));
+            } else {
+                spots.add(new Spot(i, VehicleSize.Large, this, level));
+            }
+            
+        }
+        this.level = level;
+    }
+    
+    public int getAvailableNumber() {
+        int count = 0;
+        for (int i = 0; i < spots.size(); i++) {
+            if (spots.get(i).isAvailable()) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public List<Spot> findParkingSpots(Vehicle vehicle) {
+        List<Spot> spotsFound = new ArrayList<>();
+        int spotsNeeded = vehicle.getSpotsNeeded();
+        for (int i = 0; i < spots.size(); i++) {
+            if (spots.get(i).canFitVehicle(vehicle)) {
+                spotsFound.add(spots.get(i));
+            } else {
+                spotsFound = new ArrayList<>();
+            }
+            if (spotsFound.size() == spotsNeeded) {
+                return spotsFound;
+            }
+        }
+        return null;
+    }
+}
+
+class Spot {
+    private int spotId;
+    private VehicleSize type;
+    private Row row;
+    private Level level;
+    private boolean available;
+    
+    
+    public Spot(int spotId, VehicleSize type, Row row, Level level) {
+        this.spotId = spotId;
+        this.type = type;
+        this.row = row;
+        this.level = level;
+        available = true;
+    }
+    
+    public boolean isAvailable() {
+        return available;
+    }
+    
+    public Row getRow() {
+        return row;
+    }
+    
+    public Level getLevel() {
+        return level;
+    }
+    
+    
+    public void takeSpot() {
+        available = false;
+    }
+    
+    public void leaveSpot() {
+        available = true;
+    }
+    
+    public VehicleSize getType() {
+        return type;
+    }
+    
+    public boolean canFitVehicle(Vehicle vehicle) {
+        return isAvailable() && vehicle.canFitInSpot(this);
+    }
+}
+
+class Ticket {
+    private Vehicle vehicle;
+    private List<Spot> spots;
+    
+    public Ticket(Vehicle vehicle, List<Spot> spots) {
+        this.vehicle = vehicle;
+        this.spots = spots;
+    }
+    
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+    
+    public List<Spot> getSpots() {
+        return spots;
+    }
+    
+}
+
+public class ParkingLot {
+    private List<Level> levels;
+    private Map<Vehicle, Ticket> vehicleToTicket;
+    
+    // @param n number of leves
+    // @param num_rows  each level has num_rows rows of spots
+    // @param spots_per_row each row has spots_per_row spots
+    
+    public ParkingLot(int n, int num_rows, int spots_per_row) {
+        // Write your code here
+        levels = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            levels.add(new Level(i, num_rows, spots_per_row));
+        }
+        vehicleToTicket = new HashMap<>();
+        
+    }
+    
+    private List<Spot> findParkingSpots(Vehicle vehicle) {
+        for (int i = 0; i < levels.size(); i++) {
+            List<Spot> spots = levels.get(i).findParkingSpots(vehicle);
+            if (spots != null) {
+                return spots;
+            }
+        }
+        return null;
+    }
+    
+
+    // Park the vehicle in a spot (or multiple spots)
+    // Return false if failed
+    public boolean parkVehicle(Vehicle vehicle) {
+        // Write your code here
+        List<Spot> spots = findParkingSpots(vehicle);
+        if (spots == null) {
+            // System.out.println("cannot park " + vehicle.getSize());
+            return false;
+        }
+        for (int i = 0; i < spots.size(); i++) {
+            Spot spot = spots.get(i);
+            spot.takeSpot();
+            spot.getLevel().updateAvailableNumber(-1);
+        }
+        vehicleToTicket.put(vehicle, new Ticket(vehicle, spots));
+        
+        return true;
+    }
+
+    // unPark the vehicle
+    public void unParkVehicle(Vehicle vehicle) {
+        Ticket ticket = vehicleToTicket.get(vehicle);
+        List<Spot> spots = ticket.getSpots();
+        for (int i = 0; i < spots.size(); i++) {
+            Spot spot = spots.get(i);
+            spot.leaveSpot();
+            spot.getLevel().updateAvailableNumber(1);
+        }
+    }
+
+}
+
