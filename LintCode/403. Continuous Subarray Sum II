@@ -1,9 +1,9 @@
-// 以下这种解法是错误的，注意当数组为circular的时候，某个数字可以被避开，如
+// 以下这种解法套用了非circular的解法，是错误的，因为当数组为circular的时候，某个数字可以被避开，如
 [4,10,13,4,-1,0,3,3,5]
 的答案是[5,3]，没有包括-1
 
-// 而当数组不是circular的时候，如果从-1后面的数开始，-1前面的和就会被抛弃，而-1前面的和大于0，答案就错了。
-// 本质上，非circular时，数组和不能稍有下降就重新开始，因为这会牺牲前面的整数和，而circular时，就可以完美避开这种下降。
+// 而在非circular的情况下，加上-1并没有导致sum小于零，不需要更新起始位置，但这不适用于circular的情况
+// 本质上，非circular时，数组和做不到稍有下降就重新开始，因为这会牺牲前面的整数和，而circular时，就可以完美避开这种下降。
 public class Solution {
     /*
      * @param A: An integer array
@@ -23,6 +23,7 @@ public class Solution {
         
         for (int i = 0; i < 2 * n; i++) {
             if (sum < 0) {
+            // 当i大于n的时候如果还小于零，即便更新起始位置，也无非是重复了一遍之前的累加和的情况
                 if (i >= n) {
                     break;
                 }
@@ -43,8 +44,15 @@ public class Solution {
     }
 }
 
-思路： 先按照非circular找到max subarray，然后找到不circular时的min子数组，用整个数组的和total减去min subarray, 
-得到另一个可能的max subarray。两个作比较。注意处理特殊情况。
+思路： 
+分两种情况讨论：
+
+最大数组仍然是中间的某一段
+最大数组是去掉了中间的一段之后剩下的部分
+第一种情况用传统的最大子数组做法走一遍(参考题解)。第二种做法稍微想一下就可以证明中间被去掉的那一段是整个数组的 minimum subarray。
+所以求一遍 minimum subarray 之后，比较两种情况, 取最优解即可
+
+需要特殊考虑 minimum subarray 是取了所有数的情况。
 
 time complexity：O(n)
 space complexity：O(1)
