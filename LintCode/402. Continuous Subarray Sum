@@ -1,0 +1,40 @@
+思路：如果累加和小于零，就抛弃掉这个和，然后把当前数字作为起始位置，重新计算累加和。在这个过程中，不断与最大和比较。
+
+时间复杂度：O(n)
+空间复杂度：O(1)
+
+public class Solution {
+    /*
+     * @param A: An integer array
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    public List<Integer> continuousSubarraySum(int[] A) {
+        List<Integer> res = new ArrayList<>();
+        if (A == null || A.length == 0 ) {
+            return res;
+        }
+        res.add(0);
+        res.add(0);
+        int start = 0, end = 0;
+        int sum = 0;
+        int ans = Integer.MIN_VALUE;
+        
+        
+        for (int i = 0; i < A.length; i++) {
+            if (sum < 0) {
+                sum = A[i];
+                start = end = i;
+            } else {
+                sum += A[i];
+                end = i;
+            }
+            if (sum > ans) {
+                ans = sum;
+                res.set(0, start);
+                res.set(1, end);
+            }
+            
+        }
+        return res;
+    }
+}
