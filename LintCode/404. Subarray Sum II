@@ -67,16 +67,18 @@ public class Solution {
             minSum += A[i];
             while (minSum >= start && right < i) {
                 // 先变化指针，再变化minSum，才能保证状态的对应
-                // 这里的判断条件是right < i，等于说right++之后可以等于i，保证了right指向的位置一定小于start。
+                // 这里的判断条件是right < i，等于说right++之后可以等于i，保证了right + 1指向的位置加到i一定小于start。
                 right++;               
                 minSum -= A[right];                
             }           
             
             maxSum += A[i];
             while (maxSum > end && left < right) {
+                // left + 1加到i是小于等于range end的。
                 left++;                
                 maxSum -= A[left];
             }
+            // right符合，left不符合
             res += right - left;
         }
         return res;
