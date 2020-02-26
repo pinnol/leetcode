@@ -58,7 +58,7 @@ public class Solution {
         
          // 这里写的与jiuzhang的solution不同，我是先找到最小，然后再加1，而九章是找到就加一（写在了if判断中），
          //   我这种写法在如果使用diff = Integer.MAX_VALUE，在遇到[0, Integer.MAX_VALUE]时会出错，因为此时找到的结果是[0,0]，
-         //   不需要再加一了九章的写法就没有这个危险。
+         //   不需要再加一了，九章的写法就没有这个危险。
         if (idx1 < idx2) {
             res[0] = idx1 + 1;
             res[1] = idx2;
