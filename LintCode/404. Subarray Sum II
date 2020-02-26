@@ -38,8 +38,9 @@ public class Solution {
 
 
 
-思路：使用同向双指针，minSum代表当前最小和（从right加到i），maxSum代表当前最大和（从left加到i）。遍历i。每次i对应的子数组数量为right-left。
-注意增加right的条件需要为minSum >= start，如果只是minSum > start，那么我们不能保证最终right对应的和是等于start的。
+思路：使用同向双指针，minSum代表当前最小和（从right加到i），maxSum代表当前最大和（从left加到i），
+这样满足range的子数组的起始位置就在left和right之间，结尾位置是i。遍历结尾位置i。每次i对应的子数组数量为right-left。
+注意增加right的条件需要为minSum >= start，如果只是minSum > start，那么我们不知道最终right对应的和是等于start的还是小于start的。
 就不知道是用right-left+1，还是right-left。
 为了使指针与当前和同步，可以先减A[i]，再increment 指针。
 
@@ -65,7 +66,8 @@ public class Solution {
         for (int i = 0; i < A.length; i++) {
             minSum += A[i];
             while (minSum >= start && right < i) {
-                // 先变化指针
+                // 先变化指针，再变化minSum，才能保证状态的对应
+                // 这里的判断条件是right < i，等于说right++之后可以等于i，保证了right指向的位置一定小于start。
                 right++;               
                 minSum -= A[right];                
             }           
