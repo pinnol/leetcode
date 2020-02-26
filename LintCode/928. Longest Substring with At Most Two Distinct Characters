@@ -1,6 +1,6 @@
 思路：虽然不能说是双指针，但其实还是需要两个指针，只不过l每次是重新找的。
      使用map维护每种字符最后一次出现的位置，当map的size超过2的时候，说明现在记录的有三种字符，需要更新l，
-     l永远是两个字符中第一个字符第一次出现的位置，注意要把res = Math.max(res, r - l)写在if(map.size() > 2)的块外。
+     l永远是两个字符中第一个字符最后一次出现的位置，注意要把res = Math.max(res, r - l)写在if(map.size() > 2)的块外。
 
 时间复杂度：O(n)
 空间复杂度：O(1)
@@ -24,6 +24,7 @@ public class Solution {
                 r++;
             }  
             if (map.size() > 2) {
+            // 因为要打擂台，所以先将left初始化为最大
                 int left = s.length();
                 for (Integer i : map.values()) {
                     left = Math.min(left, i);
