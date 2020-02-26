@@ -44,7 +44,9 @@ public class Solution {
                 return a.sum - b.sum;
             }
         });
-        
+        // 如果使用int diff = Integer.MAX_VALUE，而不是long的话，
+        //  在遇到[Integer.MAX_VALUE]时会出错，因为此时没有一个pair会比初始res小，最终idx仍然是[0,0]，而我在后面又会对idx1加一，
+        // 结果就会变成[1,0]了，当然我们也可以像九章一样，在前面加一个判断条件：如果数组长度为1，就直接返回[0, 0].
         long diff = Long.MAX_VALUE;
         int idx1 = 0;
         int idx2 = 0;
@@ -56,9 +58,6 @@ public class Solution {
             }
         }
         
-         // 这里写的与jiuzhang的solution不同，我是先找到最小，然后再加1，而九章是找到就加一（写在了if判断中），
-         //   我这种写法在如果使用diff = Integer.MAX_VALUE，在遇到[0, Integer.MAX_VALUE]时会出错，因为此时找到的结果是[0,0]，
-         //   不需要再加一了，九章的写法就没有这个危险。
         if (idx1 < idx2) {
             res[0] = idx1 + 1;
             res[1] = idx2;
@@ -93,6 +92,7 @@ public class Solution {
         } 
         
         int len = nums.length;
+        // 数组长度为1时，直接返回[0, 0]
         if(len == 1) {
             res[0] = res[1] = 0;
             return res;
