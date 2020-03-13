@@ -1,0 +1,60 @@
+先讲解一下Tarjan’s Strongly Connected Components algorithm
+https://www.youtube.com/watch?v=TyWtx7q2D7Y
+
+需要用到到元素有
+id：初始化为0，每次遇到一个新的点就自增一下。
+int[] ids: 每个元素的id，也就是DFS第一次访问到该点时对应的id，同时起到visited数组的作用。
+int[] low_value: 每个点所能访问到的最小的祖先节点id，并且该祖先节点不在另一个SCC中。
+stack: 遇到一个新节点就push进stack，当DFS backtrack的时候，如果遇到了SCC的根，就pop stack直到把该SCC全都pop出去。
+set: 指示节点是否在stack中。
+
+该算法的两个重点，一个是如何更新low—value，一个是记得每找到一个SCC就pop出stack，不然会把几个SCC合并到一起。
+
+那么如何更新low—value呢？
+两种情况：
+一是DFS访问节点u的子节点v时，子节点v已经被访问过，且在stack中，lowValue = min(low_value[v], low_value[u])。
+二是当DFS回溯的时候，lowValue = min(low_value[v], low_value[u])
+
+如何判断找到了一个SCC？
+回溯时，id = low_value的时候，该节点就是SCC的根。
+
+代码：
+UNVISITED = -1
+n = number of nodes in graph
+g = adjacency list with directed edges
+
+id = 0       # Used to give each node an id
+sccCount = 0 # Used to count number of SCCs found
+
+# Index i in these arrays represents node i
+ids = [0, 0, … 0, 0]               # Length n
+low = [0, 0, … 0, 0]               # Length n
+onStack = [false, false, …, false] # Length n
+stack = an empty stack data structure
+
+function findSccs():
+  for(i = 0; i < n; i++): ids[i] = UNVISITED
+  for(i = 0; i < n; i++):
+    if(ids[i] == UNVISITED):
+      dfs(i)
+  return low
+
+function dfs(at):
+  stack.push(at)
+  onStack[at] = true
+  ids[at] = low[at] = id++
+  
+  # Visit all neighbours & min low-link on callback
+  for(to : g[at]):
+    if(ids[to] == UNVISITED): dfs(to)
+    if(onStack[to]): low[at] = min(low[at],low[to])
+
+  # After having visited all the neighbours of ‘at’
+  # if we're at the start of a SCC empty the seen
+  # stack until we’re back to the start of the SCC.
+  if(ids[at] == low[at]):
+    for(node = stack.pop();;node = stack.pop()):
+      onStack[node] = false
+      low[node] = ids[at]
+      if(node == at): break
+    sccCount++
