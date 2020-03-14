@@ -1,0 +1,50 @@
+思路：We observe that a palindrome mirrors around its center. Therefore, a palindrome can be expanded from its center, and there are only 2n - 12n−1 such centers.
+
+You might be asking why there are 2n - 12n−1 but not nn centers? The reason is the center of a palindrome can be in between two letters. Such palindromes have even number of letters (such as "abba") and its center are between the two 'b's.
+
+注意start和end的计算
+
+时间复杂度：O(n^2)
+空间复杂度：O(1)
+
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() < 2) {
+            return s;
+        }
+        int len = 0;
+        int mid = -1;
+        for (int i = 0; i < s.length(); i++) {
+            // System.out.println("start = " + i);
+            int len1 = findPalindrome(s, i, i);
+            // System.out.println("len1 = " + len1);
+            int len2 = findPalindrome(s, i, i + 1);
+            // System.out.println("len2 = " + len2);
+            if (len1 > len) {
+                len = len1;
+                mid = i;
+            }
+            if (len2 > len) {
+                len = len2;
+                mid = i;
+            }
+        }
+        // 注意start和end计算方法不同
+        return s.substring(mid - (len - 1) / 2, mid + len / 2 + 1);
+        
+    }
+    
+    private int findPalindrome(String s, int l, int r) {
+        int len = 0;
+        while (l >= 0 && r < s.length()) {
+            if (s.charAt(l) == s.charAt(r)) {
+                len += l == r ? 1 : 2;
+                l--;
+                r++;
+            } else {
+                break;
+            }
+        }
+        return len;
+    }
+}
