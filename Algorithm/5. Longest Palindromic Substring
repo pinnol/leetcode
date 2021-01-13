@@ -29,7 +29,7 @@ class Solution {
                 mid = i;
             }
         }
-        // 注意start和end计算方法不同
+        // 注意start和end计算方法不同，与len的奇偶性有关。
         return s.substring(mid - (len - 1) / 2, mid + len / 2 + 1);
         
     }
@@ -48,3 +48,14 @@ class Solution {
         return len;
     }
 }
+
+
+
+奇偶性讨论：
+
+1 2 3 4 5 6 7
+        
+  start_index
+i\len    2    3
+2        2    1
+3        3    2
