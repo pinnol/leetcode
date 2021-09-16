@@ -7,6 +7,10 @@
 time complexity: O(1) in average
 space complexity: O(h) h是树的高度  如果要实现O(1) extra memory space，参考in-order successor
 
+in average O(1) time
+O(h) memory, where h is the height of the tree?
+
+
 /**
  * Definition of TreeNode:
  * public class TreeNode {
