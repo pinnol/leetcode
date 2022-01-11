@@ -1,3 +1,10 @@
+这题要分条件讨论，一般情况下我们并不保证BST是balanced，所以第二种方法的时间复杂度就会退化成O(n), 代码还长。此时我们只需要第一种方法，也就是inorder遍历就好。
+
+第一种：
+
+第二种：tree是balanced
+时间复杂度：O(k + log(n)) k是move upper/lower的时间，只有在balanced tree的情况下才是k, logn是构造stack的时间，如果不是balanced tree就会退化成O(n)
+空间复杂度：O(log(n))
 /**
  * Definition of TreeNode:
  * public class TreeNode {
@@ -48,6 +55,13 @@ public class Solution {
     }
     
     
+    // 这题的一个难点就是用BST查找的方法构造stack可不可行，实际上是可行的。这种方法构造的stack，就是我们一般情况下tree iterator的状态。只要保证stack中是一条从根节点走到当前节点的path就可以。
+    //       5
+    //      / 
+    //     3 
+    //    /  \ 
+    //   2    4
+    //  当target是3.5的时候。我们的stack是[5,3,4]往上挪动一个节点就是5，2可以当做是我们已经遍历过的节点。
     private Stack<TreeNode> getStack(TreeNode root, double target) {
         Stack<TreeNode> stack = new Stack<>();
         if (root == null) {
@@ -59,7 +73,8 @@ public class Solution {
             if (root.val > target) {
                 root = root.left;
             // 注意这里不能在找到target的时候就返回stack，一定要等到将比较进行到底，这样才能求出最小上限和最大下限。比如当target点
-            // 还有右子树的时候，提前停止，就有可能无法求出最小上限，
+            // 还有右子树的时候，提前停止，就有可能无法求出最小上限。此时我们找到的最后一个点一定是最小的上限或者最大的下限，那么把另一个stack相应的
+            // 向下或者向上挪动一个点就是target，这样就不会漏掉target自己。
             } else{
                 root = root.right;
             }
