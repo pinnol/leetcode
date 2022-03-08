@@ -1,0 +1,27 @@
+time:   O(N^2)
+space:  O(1)
+
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        sorted_nums = sorted(nums)
+        ans_set = set()
+        ans = []
+        for i in range(len(nums) - 2):
+            #注意下面这行的优化，枚举第一个数的时候，跳过重复的
+            if i > 0 and sorted_nums[i] == sorted_nums[i - 1]:
+                continue
+            
+            last_pair = None
+            j, k = i + 1, len(nums) - 1
+            while j < k:
+                if sorted_nums[j] + sorted_nums[k] == -sorted_nums[i]:
+                    if (sorted_nums[j], sorted_nums[k]) != last_pair:
+                        ans.append([sorted_nums[i], sorted_nums[j], sorted_nums[k]])
+                        last_pair = (sorted_nums[j], sorted_nums[k])
+                    j += 1
+                    k -= 1
+                elif sorted_nums[j] + sorted_nums[k] < -sorted_nums[i]:
+                    j += 1
+                else:
+                    k -= 1
+        return ans
